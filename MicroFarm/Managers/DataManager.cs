@@ -1,5 +1,6 @@
 ﻿using MicroFarm.Models;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -38,5 +39,20 @@ namespace MicroFarm.Managers
             using FileStream stream = new(AquariumDataFile, FileMode.Create, FileAccess.Write);
             serializer.Serialize(stream, data);
         }
+    }
+
+    /// <summary>
+    /// 水族数据
+    /// </summary>
+    public class AquariumData
+    {
+        /// <summary>
+        /// 上次保存时间
+        /// </summary>
+        public string LastSavaTime { get; set; }
+        /// <summary>
+        /// 鱼数据
+        /// </summary>
+        public List<Fish> FishData { get; set; }
     }
 }

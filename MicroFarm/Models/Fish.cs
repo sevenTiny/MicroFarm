@@ -47,7 +47,7 @@ namespace MicroFarm.Models
                 NotifyPropertyChanged(nameof(Size));
             }
         }
-        private int _Age = 1;
+        private int _Age;
         /// <summary>
         /// 出生日期
         /// </summary>
