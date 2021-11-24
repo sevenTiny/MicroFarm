@@ -8,12 +8,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Configs\AquariumData.xml" />
+    <None Remove="Resources\Configs\FishMetaData.xml" />
+    <None Remove="Resources\Configs\GameGlobal.xml" />
     <None Remove="Resources\Images\fish.png" />
     <None Remove="Resources\Images\right.png" />
     <None Remove="Resources\Images\sea_background.jpg" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Resources\Configs\AquariumData.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Configs\FishMetaData.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Configs\GameGlobal.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Images\fish.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

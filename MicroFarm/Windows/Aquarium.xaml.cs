@@ -1,5 +1,6 @@
 ﻿using MicroFarm.Configs;
 using MicroFarm.Helpers;
+using MicroFarm.Managers;
 using MicroFarm.Models;
 using System;
 using System.Collections.Generic;
@@ -28,8 +29,8 @@ namespace MicroFarm.Windows
     /// </summary>
     public partial class Aquarium : Window
     {
-        public ObservableCollection<FishBase> FishCollection { get; set; } = new ObservableCollection<FishBase>();
-        private DispatcherTimer _timer;
+        public ObservableCollection<Fish> FishCollection { get; set; } = new ObservableCollection<Fish>();
+        private DispatcherTimer _timer, _saveTimer;
 
         public Aquarium()
         {
@@ -50,6 +51,10 @@ namespace MicroFarm.Windows
             _timer.Tick += TimerEvent;
             _timer.Start();
 
+            _saveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(60) };
+            _saveTimer.Tick += SaveDataEvent;
+            _saveTimer.Start();
+
             //延时1s后启动水族
             IProgress<int> progress = new Progress<int>(val => TimerEvent(null, null));
             Task.Run(() => { Thread.Sleep(1000); progress.Report(1); });
@@ -57,11 +62,7 @@ namespace MicroFarm.Windows
 
         public void InitFishs()
         {
-            var fishes = Enumerable.Range(0, 10).Select(i => new Fish
-            {
-                Source = "right"
-            })
-            .ToList();
+            var fishes = DataManager.LoadData().FishData;
 
             foreach (var item in fishes)
             {
@@ -80,13 +81,14 @@ namespace MicroFarm.Windows
 
         private void TimerEvent(object sender, EventArgs a)
         {
+            // TODO: 现在每个元素用的全局定时器，同一时刻改变游动状态，有点生硬，最好改成每个元素独立事件线
             //执行动作
             foreach (var item in VisualHelper.FindVisualChildren<ContentPresenter>(fishItems))
             {
                 //https://www.cnblogs.com/hayasi/p/7102451.html
 
                 //拿到数据
-                var data = item.DataContext as FishBase;
+                var data = item.DataContext as Fish;
 
                 if (data == null)
                     continue;
@@ -115,6 +117,26 @@ namespace MicroFarm.Windows
 
                 data.Storyboard.Begin();//开启时间线动画
             }
+        }
+
+        private void SaveDataEvent(object sender, EventArgs a)
+        {
+            Trace.WriteLine("正在保存...");
+
+            //执行周期
+            foreach (var item in FishCollection)
+            {
+                item.GrowUp();
+            }
+
+            //保存数据
+            DataManager.SaveData(new AquariumData
+            {
+                LastSavaTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                FishData = FishCollection.ToList()
+            });
+
+            Trace.WriteLine("保存成功!");
         }
     }
 }
