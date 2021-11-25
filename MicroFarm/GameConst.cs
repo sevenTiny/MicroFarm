@@ -27,8 +27,8 @@
         /// </summary>
         public const int RefereshIntervalSeconds = 10;
         /// <summary>
-        /// 一个保存周期（秒）
+        /// 一个周期（秒）
         /// </summary>
-        public const int AgeIntervalSeconds = 60;
+        public const int CycleIntervalSeconds = 60;
     }
 }

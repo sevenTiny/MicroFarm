@@ -11,7 +11,8 @@
     <None Remove="Resources\Configs\AquariumData.xml" />
     <None Remove="Resources\Configs\FishMetaData.xml" />
     <None Remove="Resources\Configs\GameGlobal.xml" />
-    <None Remove="Resources\Images\fish.png" />
+    <None Remove="Resources\Images\fish_0.png" />
+    <None Remove="Resources\Images\fish_1.png" />
     <None Remove="Resources\Images\right.png" />
     <None Remove="Resources\Images\sea_background.jpg" />
   </ItemGroup>
@@ -26,8 +27,11 @@
     <Content Include="Resources\Configs\GameGlobal.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Images\fish.png">
+    <Content Include="Resources\Images\fish_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\fish_1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Images\right.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

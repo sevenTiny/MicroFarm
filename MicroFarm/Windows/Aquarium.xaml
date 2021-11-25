@@ -50,6 +50,6 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <ItemsControl x:Name="fishItems" ItemsSource="{Binding FishCollection}" Style="{StaticResource MyItemsControlStyle}" />
+        <ItemsControl x:Name="fishItems" ItemsSource="{Binding FishCollection}" Style="{StaticResource MyItemsControlStyle}"/>
     </Grid>
 </Window>

@@ -22,7 +22,7 @@ namespace MicroFarm.Windows
     public partial class Aquarium : Window
     {
         public ObservableCollection<Fish> FishCollection { get; set; } = new ObservableCollection<Fish>();
-        private DispatcherTimer _timer, _saveTimer;
+        private DispatcherTimer _timer, _cycleTimer;
 
         public Aquarium()
         {
@@ -43,9 +43,9 @@ namespace MicroFarm.Windows
             _timer.Tick += TimerEvent;
             _timer.Start();
 
-            _saveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(GameConst.AgeIntervalSeconds) };
-            _saveTimer.Tick += SaveDataEvent;
-            _saveTimer.Start();
+            _cycleTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(GameConst.CycleIntervalSeconds) };
+            _cycleTimer.Tick += CycleEvent;
+            _cycleTimer.Start();
 
             //延时1s后启动水族
             IProgress<int> progress = new Progress<int>(val => TimerEvent(null, null));
@@ -58,6 +58,8 @@ namespace MicroFarm.Windows
 
             foreach (var item in fishes)
             {
+                item.Init();
+
                 FishCollection.Add(item);
             }
         }
@@ -71,6 +73,11 @@ namespace MicroFarm.Windows
             GameConst.MaxTop = (int)(this.ActualHeight > 0 ? this.ActualHeight : this.Height) - 50;
         }
 
+        /// <summary>
+        /// 刷新函数事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="a"></param>
         private void TimerEvent(object sender, EventArgs a)
         {
             // TODO: 现在每个元素用的全局定时器，同一时刻改变游动状态，有点生硬，最好改成每个元素独立事件线
@@ -111,7 +118,12 @@ namespace MicroFarm.Windows
             }
         }
 
-        private void SaveDataEvent(object sender, EventArgs a)
+        /// <summary>
+        /// 周期函数事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="a"></param>
+        private void CycleEvent(object sender, EventArgs a)
         {
             Trace.WriteLine("正在保存...");
 

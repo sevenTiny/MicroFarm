@@ -126,7 +126,7 @@ namespace MicroFarm.Models
             }
             set
             {
-                _Source = Path.Combine(Environment.CurrentDirectory, @$"Resources/Images/{value}.png");
+                _Source = Path.Combine(Environment.CurrentDirectory, @$"Resources/Images/{value}");
                 NotifyPropertyChanged(nameof(Source));
             }
         }
@@ -143,12 +143,13 @@ namespace MicroFarm.Models
         public Storyboard Storyboard { get; set; }
         #endregion
 
-        public Fish()
+        /// <summary>
+        /// 初始化数据
+        /// </summary>
+        public void Init()
         {
             //初始化时，附加元属性
             FishManager.AttatchMetaProperty(this);
-            //初始化目标位置
-            RefereshAimPosition();
         }
 
         /// <summary>

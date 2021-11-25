@@ -3,8 +3,8 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<FishMetaData>
 		<!--名称-->
-		<Name>标准鱼</Name>
-		<!--类型Id-->
+		<Name>标准鱼（雄）</Name>
+		<!--类型Id（唯一）-->
 		<Category>0</Category>
 		<!--一个标准周期为1分钟-->
 		<!--出生周期-->
@@ -18,10 +18,41 @@
 		<!--最大尺寸-->
 		<MaxSize>50</MaxSize>
 		<!--图片资源-->
-		<Source>fish</Source>
+		<Source>fish_0.png</Source>
 		<!--正常死亡率-->
 		<NormalDeathRate>0.05</NormalDeathRate>
 		<!--最大周期死亡率-->
 		<MaxAgeDeathRate>0.1</MaxAgeDeathRate>
+		<!--生殖率-->
+		<ReproductionRate>0</ReproductionRate>
+		<!--生殖关联种类，如果存在关联，则水族中必须同时存在另一种成年鱼，才会触发生殖-->
+		<ReproductionRelationCategory>1</ReproductionRelationCategory>
+	</FishMetaData>
+	<FishMetaData>
+		<!--名称-->
+		<Name>标准鱼（雌）</Name>
+		<!--类型Id（唯一）-->
+		<Category>1</Category>
+		<!--一个标准周期为1分钟-->
+		<!--出生周期-->
+		<BirthAge>1</BirthAge>
+		<!--成年周期，成年有几率触发生育-->
+		<AdultAge>180</AdultAge>
+		<!--最大周期，周期达到最大有概率死亡-->
+		<MaxAge>360</MaxAge>
+		<!--标准移动速度,最快为20，值越大，越慢-->
+		<DefaultSpeed>20</DefaultSpeed>
+		<!--最大尺寸-->
+		<MaxSize>50</MaxSize>
+		<!--图片资源-->
+		<Source>fish_1.png</Source>
+		<!--正常死亡率-->
+		<NormalDeathRate>0.05</NormalDeathRate>
+		<!--最大周期死亡率-->
+		<MaxAgeDeathRate>0.1</MaxAgeDeathRate>
+		<!--生殖率-->
+		<ReproductionRate>0.01</ReproductionRate>
+		<!--生殖关联种类，如果存在关联，则水族中必须同时存在另一种成年鱼，才会触发生殖-->
+		<ReproductionRelationCategory>0</ReproductionRelationCategory>
 	</FishMetaData>
 </ArrayOfFishMetaData>
