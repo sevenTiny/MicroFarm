@@ -31,11 +31,6 @@ namespace MicroFarm.Windows
         public Aquarium()
         {
             InitializeComponent();
-            //绑定窗体大小改变调整活动范围
-            this.SizeChanged += (sender, e) => RefereshActiveRange();
-            this.StateChanged += (sender, e) => RefereshActiveRange();
-            //刷新活动范围
-            RefereshActiveRange();
             //初始化水族数据
             InitAquarium();
             //绑定上下文
@@ -84,64 +79,24 @@ namespace MicroFarm.Windows
         }
 
         /// <summary>
-        /// 刷新活动范围
-        /// </summary>
-        private void RefereshActiveRange()
-        {
-            GameConst.MaxLeft = (int)(this.ActualWidth > 0 ? this.ActualWidth : this.Width) - 50;
-            GameConst.MaxTop = (int)(this.ActualHeight > 0 ? this.ActualHeight : this.Height) - 50;
-        }
-
-        /// <summary>
         /// 刷新函数事件
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="a"></param>
         private void RefereshEvent(object sender, EventArgs a)
         {
-            // TODO: 现在每个元素用的全局定时器，同一时刻改变游动状态，有点生硬，最好改成每个元素独立事件线
-            //执行动作
             foreach (var item in VisualHelper.FindVisualChildren<ContentPresenter>(fishItems))
             {
-                //https://www.cnblogs.com/hayasi/p/7102451.html
-
-                //拿到数据
-                var data = item.DataContext as Fish;
-
-                if (data == null)
+                //获取实例
+                if (item.DataContext is not Fish fish)
                     continue;
 
-                //刷新状态
-                data.Referesh(Canvas.GetLeft(item), Canvas.GetTop(item));
+                //绑定元素到对象
+                fish.Binding(item);
 
-                //如果动画没停，先将动画停止
-                if (data.Storyboard != null && data.Storyboard.GetCurrentState() != ClockState.Stopped)
-                {
-                    data.Storyboard.Stop();
-                    data.Storyboard.Children.Clear();
-                }
-
-                //如果已经死亡，就不触发移动动画了
-                if (data.IsDeath)
-                    continue;
-
-                data.Storyboard = new Storyboard();
-
-                var daLeft = new DoubleAnimation(data.Left, data.AimLeft, new Duration(TimeSpan.FromSeconds(data.RealTimeSpeed)));//实例化double动画处理对象，并取值
-                Storyboard.SetTarget(daLeft, item);//将动画处理的对象和控件关联起来
-                Storyboard.SetTargetProperty(daLeft, new PropertyPath("(Canvas.Left)"));//设置这个动画的播放位置
-                data.Storyboard.Children.Add(daLeft);//将动画处理对象添加到故事板中
-
-                var daTop = new DoubleAnimation(data.Top, data.AimTop, new Duration(TimeSpan.FromSeconds(data.RealTimeSpeed)));//实例化double动画处理对象，并取值
-                Storyboard.SetTarget(daTop, item);//将动画处理的对象和控件关联起来
-                Storyboard.SetTargetProperty(daTop, new PropertyPath("(Canvas.Top)"));//设置这个动画的播放位置
-                data.Storyboard.Children.Add(daTop);//将动画处理对象添加到故事板中
-
-                data.Storyboard.Begin();//开启时间线动画
+                //清理死亡尸体
+                FishManager.ClearDeathBody(FishCollection, fish);
             }
-
-            //清理死亡尸体
-            FishManager.ClearDeathBody(FishCollection);
         }
 
         /// <summary>
@@ -180,8 +135,6 @@ namespace MicroFarm.Windows
 
             //触发生育事件
             FishManager.Reproduction(FishCollection);
-            //清理死亡尸体
-            FishManager.ClearDeathBody(FishCollection);
         }
     }
 }

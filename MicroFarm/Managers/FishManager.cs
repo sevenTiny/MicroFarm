@@ -126,9 +126,11 @@ namespace MicroFarm.Managers
         /// 清理死亡尸体
         /// </summary>
         /// <param name="collection"></param>
-        public static void ClearDeathBody(ObservableCollection<Fish> collection)
+        /// <param name="fish"></param>
+        public static void ClearDeathBody(ObservableCollection<Fish> collection, Fish fish)
         {
-            collection.Where(t => t.IsDeath).ToList().ForEach(t => collection.Remove(t));
+            if (fish.IsDeath)
+                collection.Remove(fish);
         }
     }
 

@@ -5,6 +5,8 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Xml.Serialization;
 
@@ -143,22 +145,75 @@ namespace MicroFarm.Models
         [XmlIgnore]
         public Storyboard Storyboard { get; set; }
         /// <summary>
+        /// 绑定元素
+        /// </summary>
+        [XmlIgnore]
+        public ContentPresenter ContentPresenter { get; set; }
+        /// <summary>
         /// 是否死亡
         /// </summary>
         [XmlIgnore]
         public bool IsDeath { get; set; } = false;
         #endregion
 
+        public Fish()
+        {
+            //获取元数据
+            _Meta = FishManager.GetFishMeta(Category);
+        }
+
         /// <summary>
         /// 初始化数据
         /// </summary>
         public void Init()
         {
-            //获取元数据
-            _Meta = FishManager.GetFishMeta(Category);
-
             //初始化时，附加元属性
             FishManager.AttatchMetaProperty(this);
+        }
+
+        /// <summary>
+        /// 绑定元素
+        /// </summary>
+        /// <param name="contentPresenter"></param>
+        public void Binding(ContentPresenter contentPresenter)
+        {
+            //如果已经绑定过了，则跳过
+            if (ContentPresenter != null)
+                return;
+
+            //绑定
+            ContentPresenter = contentPresenter;
+
+            //开始动画
+            StartStory();
+        }
+
+        /// <summary>
+        /// 开始动画
+        /// </summary>
+        private void StartStory()
+        {
+            //刷新状态
+            Referesh(Canvas.GetLeft(ContentPresenter), Canvas.GetTop(ContentPresenter));
+
+            Storyboard = new Storyboard();
+
+            //完成时，执行下一个动画
+            Storyboard.Completed += (sender, evt) => StartStory();
+
+            //https://www.cnblogs.com/hayasi/p/7102451.html
+
+            var daLeft = new DoubleAnimation(Left, AimLeft, new Duration(TimeSpan.FromSeconds(RealTimeSpeed)));//实例化double动画处理对象，并取值
+            Storyboard.SetTarget(daLeft, ContentPresenter);//将动画处理的对象和控件关联起来
+            Storyboard.SetTargetProperty(daLeft, new PropertyPath("(Canvas.Left)"));//设置这个动画的播放位置
+            Storyboard.Children.Add(daLeft);//将动画处理对象添加到故事板中
+
+            var daTop = new DoubleAnimation(Top, AimTop, new Duration(TimeSpan.FromSeconds(RealTimeSpeed)));//实例化double动画处理对象，并取值
+            Storyboard.SetTarget(daTop, ContentPresenter);//将动画处理的对象和控件关联起来
+            Storyboard.SetTargetProperty(daTop, new PropertyPath("(Canvas.Top)"));//设置这个动画的播放位置
+            Storyboard.Children.Add(daTop);//将动画处理对象添加到故事板中
+
+            Storyboard.Begin();//开启时间线动画
         }
 
         /// <summary>
@@ -188,23 +243,13 @@ namespace MicroFarm.Models
         /// </summary>
         protected void RefereshAim()
         {
-            //到达目的点
-            if ((Math.Abs(Left - AimLeft) <= 5 && Math.Abs(Top - AimTop) <= 5))
-            {
-                RefereshAimPosition();
-            }
-            //命中几率
-            else if (RandomHelper.IsHitRate(GameConst.RefereshAimRate))
-            {
-                Trace.WriteLine("Hit Probability !!!!!!!!");
-                RefereshAimPosition();
-            }
+            var window = Window.GetWindow(ContentPresenter);
 
-            void RefereshAimPosition()
-            {
-                AimLeft = RandomHelper.GetRandomInt(GameConst.MinLeft, GameConst.MaxLeft);
-                AimTop = RandomHelper.GetRandomInt(GameConst.MinTop, GameConst.MaxTop);
-            }
+            var maxLeft = (int)(window.ActualWidth > 0 ? window.ActualWidth : window.Width) - 50;
+            var maxTop = (int)(window.ActualHeight > 0 ? window.ActualHeight : window.Height) - 50;
+
+            AimLeft = RandomHelper.GetRandomInt(GameConst.MinLeft, maxLeft);
+            AimTop = RandomHelper.GetRandomInt(GameConst.MinTop, maxTop);
         }
         /// <summary>
         /// 调整角度
@@ -234,6 +279,17 @@ namespace MicroFarm.Models
             else if (RandomHelper.IsHitRate(_Meta.NormalDeathRate))
             {
                 IsDeath = true;
+            }
+
+            //死亡后，停止移动动画
+            if (IsDeath)
+            {
+                //如果动画没停，先将动画停止
+                if (Storyboard != null && Storyboard.GetCurrentState() != ClockState.Stopped)
+                {
+                    Storyboard.Stop();
+                    Storyboard = null;
+                }
             }
         }
 
