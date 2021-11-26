@@ -22,19 +22,8 @@
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
                     <Style TargetType="ContentPresenter">
-                        <Setter Property="Canvas.Left" Value="{Binding Left, Mode=TwoWay}" />
-                        <Setter Property="Canvas.Top" Value="{Binding Top, Mode=TwoWay}" />
-                        <!--<Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Trigger.EnterActions>
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Duration="0:0:2.0" Storyboard.TargetProperty="(Canvas.Left)" To="500" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.EnterActions>
-                            </Trigger>
-                        </Style.Triggers>-->
+                        <Setter Property="Canvas.Left" Value="{Binding Left}" />
+                        <Setter Property="Canvas.Top" Value="{Binding Top}" />
                     </Style>
                 </Setter.Value>
             </Setter>
@@ -52,12 +41,15 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <ItemsControl Panel.ZIndex="-1" x:Name="fishItems" ItemsSource="{Binding FishCollection}" Style="{StaticResource MyItemsControlStyle}">
+        <!--底层水族展示-->
+        <ItemsControl Panel.ZIndex="0" x:Name="fishItems" ItemsSource="{Binding FishCollection}" Style="{StaticResource MyItemsControlStyle}">
             <ItemsControl.Background>
                 <ImageBrush ImageSource="/Resources/Images/background.jpg"/>
             </ItemsControl.Background>
         </ItemsControl>
-        <Grid Panel.ZIndex="1" Opacity="0.8" Background="White" Visibility="{Binding StartViewVisibility}">
+        <!--界面交互层-->
+        <!--顶层执行初始化-->
+        <Grid x:Name="startViewGrid"  Panel.ZIndex="2" Opacity="0.8" Background="White" Visibility="Visible">
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*"></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -69,6 +61,29 @@
                 <ContentControl Content="正在执行初始化..." FontFamily="Microsoft YaHei UI" FontSize="20" FontWeight="Bold"></ContentControl>
             </TextBlock>
             <controls:ProgressBarControl Grid.Row="2" Margin="10,0" ProgressBarValue="{Binding StartProgressBarValue}"></controls:ProgressBarControl>
+            <Grid.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding StartViewVisibility}" Value="Hidden">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:0:3.0" Storyboard.TargetProperty="Opacity" From="0.8" To="0" />
+                                        <ObjectAnimationUsingKeyFrames Duration="0:0:3" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:3">
+                                                <DiscreteObjectKeyFrame.Value>
+                                                    <Visibility>Hidden</Visibility>
+                                                </DiscreteObjectKeyFrame.Value>
+                                            </DiscreteObjectKeyFrame>
+                                        </ObjectAnimationUsingKeyFrames>
+
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
         </Grid>
     </Grid>
 </Window>

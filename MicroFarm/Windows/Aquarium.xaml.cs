@@ -110,7 +110,7 @@ namespace MicroFarm.Windows
                 var diff = DateTime.Now - lastSaveData;
 
                 //最大追踪6个小时
-                int addMinutes = diff > TimeSpan.FromHours(6) ? 360 : (int)diff.TotalMilliseconds;
+                int addMinutes = diff > TimeSpan.FromHours(6) ? 360 : (int)diff.TotalMinutes;
 
                 OutPutHelper.WriteLine($"距离上次保存将追踪[{addMinutes}]个周期!");
                 OutPutHelper.WriteLine("开始追踪周期...");
@@ -123,7 +123,8 @@ namespace MicroFarm.Windows
                         CycleExecute();
                         //进度条
                         StartProgressBarValue = (int)((double)i / addMinutes * 100);
-                        Thread.Sleep(10);
+
+                        Thread.Sleep(5);
                     }
 
                     this.Dispatcher.Invoke(() =>
@@ -185,7 +186,6 @@ namespace MicroFarm.Windows
             OutPutHelper.WriteLine("保存成功!");
         }
 
-
         /// <summary>
         /// 执行周期逻辑
         /// </summary>
@@ -199,20 +199,19 @@ namespace MicroFarm.Windows
             }
 
             #region 生育事件
-            //IProgress<List<Fish>> reproduction = new Progress<List<Fish>>(fishes =>
-            //{
-            //    this.Dispatcher.Invoke(() => { fishes.ForEach(item => FishCollection.Add(item)); });
-            //});
-
             //Task.Run(() =>
             //{
             var newFishes = FishManager.Reproduction(FishCollection);
 
             if (newFishes.Any())
                 this.Dispatcher.Invoke(() => { newFishes.ForEach(item => FishCollection.Add(item)); });
-            //reproduction.Report(newFishes);
             //});
             #endregion
+        }
+
+        private void DoubleAnimation_Completed(object sender, EventArgs e)
+        {
+            startViewGrid.Visibility = Visibility.Hidden;
         }
     }
 }
