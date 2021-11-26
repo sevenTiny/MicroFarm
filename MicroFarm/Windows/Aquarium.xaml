@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MicroFarm.Windows"
         xmlns:models="clr-namespace:MicroFarm.Models"
+        xmlns:controls="clr-namespace:MicroFarm.Windows.Controls"
         mc:Ignorable="d"
         Title="Aquarium" Height="400" Width="600" MinHeight="400" MinWidth="600"
+        Loaded="Window_Loaded"
         >
     <Window.Resources>
         <Style x:Key="MyItemsControlStyle" TargetType="ItemsControl">
@@ -50,6 +52,23 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <ItemsControl x:Name="fishItems" ItemsSource="{Binding FishCollection}" Style="{StaticResource MyItemsControlStyle}"/>
+        <ItemsControl Panel.ZIndex="-1" x:Name="fishItems" ItemsSource="{Binding FishCollection}" Style="{StaticResource MyItemsControlStyle}">
+            <ItemsControl.Background>
+                <ImageBrush ImageSource="/Resources/Images/background.jpg"/>
+            </ItemsControl.Background>
+        </ItemsControl>
+        <Grid Panel.ZIndex="1" Opacity="0.8" Background="White" Visibility="{Binding StartViewVisibility}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="3*"></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="3*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="1" HorizontalAlignment="Center">
+                <ContentControl Content="正在执行初始化..." FontFamily="Microsoft YaHei UI" FontSize="20" FontWeight="Bold"></ContentControl>
+            </TextBlock>
+            <controls:ProgressBarControl Grid.Row="2" Margin="10,0" ProgressBarValue="{Binding StartProgressBarValue}"></controls:ProgressBarControl>
+        </Grid>
     </Grid>
 </Window>

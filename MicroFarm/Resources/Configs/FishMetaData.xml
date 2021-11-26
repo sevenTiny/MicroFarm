@@ -22,9 +22,9 @@
 		<!--图片资源-->
 		<Source>fish_0.png</Source>
 		<!--正常死亡率-->
-		<NormalDeathRate>0.05</NormalDeathRate>
+		<NormalDeathRate>0.001</NormalDeathRate>
 		<!--最大周期死亡率-->
-		<MaxAgeDeathRate>0.1</MaxAgeDeathRate>
+		<MaxAgeDeathRate>0.01</MaxAgeDeathRate>
 		<!--生殖率-->
 		<ReproductionRate>0</ReproductionRate>
 		<!--生殖关联种类，如果存在关联，则水族中必须同时存在另一种成年鱼，才会触发生殖。如果不需要关联，则可以填自己-->
@@ -40,9 +40,9 @@
 		<DefaultSpeed>20</DefaultSpeed>
 		<MaxSize>50</MaxSize>
 		<Source>fish_1.png</Source>
-		<NormalDeathRate>0.05</NormalDeathRate>
-		<MaxAgeDeathRate>0.1</MaxAgeDeathRate>
-		<ReproductionRate>0.05</ReproductionRate>
+		<NormalDeathRate>0.001</NormalDeathRate>
+		<MaxAgeDeathRate>0.01</MaxAgeDeathRate>
+		<ReproductionRate>0.01</ReproductionRate>
 		<ReproductionRelationCategory>0</ReproductionRelationCategory>
 	</FishMetaData>
 </ArrayOfFishMetaData>

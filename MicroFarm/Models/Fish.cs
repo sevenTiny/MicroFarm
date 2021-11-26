@@ -242,10 +242,10 @@ namespace MicroFarm.Models
         /// </summary>
         protected void RefereshAim()
         {
-            var window = Window.GetWindow(ContentPresenter);
+            var window = GameContext.AquariumWindow;
 
-            var maxLeft = (int)(window.ActualWidth > 0 ? window.ActualWidth : window.Width) - 50;
-            var maxTop = (int)(window.ActualHeight > 0 ? window.ActualHeight : window.Height) - 50;
+            var maxLeft = (int)((window.ActualWidth > 0 ? window.ActualWidth : window.Width) - Size);
+            var maxTop = (int)((window.ActualHeight > 0 ? window.ActualHeight : window.Height) - Size);
 
             AimLeft = RandomHelper.GetRandomInt(GameConst.MinLeft, maxLeft);
             AimTop = RandomHelper.GetRandomInt(GameConst.MinTop, maxTop);
@@ -298,23 +298,23 @@ namespace MicroFarm.Models
         {
             Age++;
 
-            Trace.WriteLine($"----------------- GrowUp -------------------");
-            Trace.WriteLine($"|\tId={Id}");
-            Trace.WriteLine($"|\tAge={Age}");
-            Trace.WriteLine($"--------------------------------------------");
+            OutPutHelper.WriteLine($"----------------- GrowUp -------------------");
+            OutPutHelper.WriteLine($"|\tId={Id}");
+            OutPutHelper.WriteLine($"|\tAge={Age}");
+            OutPutHelper.WriteLine($"--------------------------------------------");
         }
 
         private void LogInfo()
         {
-            Trace.WriteLine($"------------------ Referesh ----------------");
-            Trace.WriteLine($"|\tId={Id}");
-            Trace.WriteLine($"|\tAimLeft={AimLeft}\tAimTop={AimTop}");
-            Trace.WriteLine($"|\tLeft={Left}\tTop={Top}");
-            Trace.WriteLine($"|\tAngle={Angle}");
-            Trace.WriteLine($"|\tRealTimeSpeed={RealTimeSpeed}");
-            Trace.WriteLine($"|\tSize={Size}");
-            Trace.WriteLine($"|\tAge={Age}");
-            Trace.WriteLine($"--------------------------------------------");
+            OutPutHelper.WriteLine($"------------------ Referesh ----------------");
+            OutPutHelper.WriteLine($"|\tId={Id}");
+            OutPutHelper.WriteLine($"|\tAimLeft={AimLeft}\tAimTop={AimTop}");
+            OutPutHelper.WriteLine($"|\tLeft={Left}\tTop={Top}");
+            OutPutHelper.WriteLine($"|\tAngle={Angle}");
+            OutPutHelper.WriteLine($"|\tRealTimeSpeed={RealTimeSpeed}");
+            OutPutHelper.WriteLine($"|\tSize={Size}");
+            OutPutHelper.WriteLine($"|\tAge={Age}");
+            OutPutHelper.WriteLine($"--------------------------------------------");
         }
     }
 }

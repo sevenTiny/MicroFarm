@@ -84,9 +84,9 @@ namespace MicroFarm.Managers
         /// 生育事件
         /// </summary>
         /// <param name="collection"></param>
-        public static void Reproduction(ObservableCollection<Fish> collection)
+        public static List<Fish> Reproduction(ObservableCollection<Fish> collection)
         {
-            var newFishes = new Lazy<List<Fish>>();
+            var newFishes = new List<Fish>();
 
             foreach (var fish in collection)
             {
@@ -110,16 +110,10 @@ namespace MicroFarm.Managers
 
                 //命中生育率，则触发生育
                 if (RandomHelper.IsHitRate(meta.ReproductionRate))
-                    newFishes.Value.Add(GenerateFish(meta.Species));
+                    newFishes.Add(GenerateFish(meta.Species));
             }
 
-            if (newFishes.IsValueCreated)
-            {
-                foreach (var item in newFishes.Value)
-                {
-                    collection.Add(item);
-                }
-            }
+            return newFishes;
         }
 
         /// <summary>
