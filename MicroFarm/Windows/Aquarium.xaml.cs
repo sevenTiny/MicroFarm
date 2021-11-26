@@ -3,6 +3,7 @@ using MicroFarm.Helpers;
 using MicroFarm.Managers;
 using MicroFarm.Models;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -21,6 +22,9 @@ namespace MicroFarm.Windows
     /// </summary>
     public partial class Aquarium : Window
     {
+        /// <summary>
+        /// 鱼类集合
+        /// </summary>
         public ObservableCollection<Fish> FishCollection { get; set; } = new ObservableCollection<Fish>();
         private DispatcherTimer _timer, _cycleTimer;
 
@@ -33,14 +37,14 @@ namespace MicroFarm.Windows
             //刷新活动范围
             RefereshActiveRange();
             //初始化水族数据
-            InitFishs();
+            InitAquarium();
             //绑定上下文
-            fishItems.ItemsSource = FishCollection;
+            this.DataContext = this;
             //绑定新增事件
-            FishCollection.CollectionChanged += TimerEvent;
+            FishCollection.CollectionChanged += RefereshEvent;
             //启动定时器
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(GameConst.RefereshIntervalSeconds), };
-            _timer.Tick += TimerEvent;
+            _timer.Tick += RefereshEvent;
             _timer.Start();
 
             _cycleTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(GameConst.CycleIntervalSeconds) };
@@ -48,19 +52,34 @@ namespace MicroFarm.Windows
             _cycleTimer.Start();
 
             //延时1s后启动水族
-            IProgress<int> progress = new Progress<int>(val => TimerEvent(null, null));
+            IProgress<int> progress = new Progress<int>(val => RefereshEvent(null, null));
             Task.Run(() => { Thread.Sleep(1000); progress.Report(1); });
         }
 
-        public void InitFishs()
+        /// <summary>
+        /// 初始化水族
+        /// </summary>
+        public void InitAquarium()
         {
-            var fishes = DataManager.LoadData().FishData;
+            var loadData = DataManager.LoadData();
 
-            foreach (var item in fishes)
+            //加载数据
+            foreach (var item in loadData.FishData ?? new List<Fish>())
             {
                 item.Init();
 
                 FishCollection.Add(item);
+            }
+
+            //跟踪周期事件到此刻
+            var lastSaveData = Convert.ToDateTime(loadData.LastSavaTime);
+
+            if (DateTime.Now > lastSaveData)
+            {
+                for (int i = 0; i < (DateTime.Now - lastSaveData).Minutes; i++)
+                {
+                    CycleExecute();
+                }
             }
         }
 
@@ -78,7 +97,7 @@ namespace MicroFarm.Windows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="a"></param>
-        private void TimerEvent(object sender, EventArgs a)
+        private void RefereshEvent(object sender, EventArgs a)
         {
             // TODO: 现在每个元素用的全局定时器，同一时刻改变游动状态，有点生硬，最好改成每个元素独立事件线
             //执行动作
@@ -102,6 +121,10 @@ namespace MicroFarm.Windows
                     data.Storyboard.Children.Clear();
                 }
 
+                //如果已经死亡，就不触发移动动画了
+                if (data.IsDeath)
+                    continue;
+
                 data.Storyboard = new Storyboard();
 
                 var daLeft = new DoubleAnimation(data.Left, data.AimLeft, new Duration(TimeSpan.FromSeconds(data.RealTimeSpeed)));//实例化double动画处理对象，并取值
@@ -116,6 +139,9 @@ namespace MicroFarm.Windows
 
                 data.Storyboard.Begin();//开启时间线动画
             }
+
+            //清理死亡尸体
+            FishManager.ClearDeathBody(FishCollection);
         }
 
         /// <summary>
@@ -127,11 +153,8 @@ namespace MicroFarm.Windows
         {
             Trace.WriteLine("正在保存...");
 
-            //执行周期
-            foreach (var item in FishCollection)
-            {
-                item.GrowUp();
-            }
+            //执行周期函数
+            CycleExecute();
 
             //保存数据
             DataManager.SaveData(new AquariumData
@@ -141,6 +164,24 @@ namespace MicroFarm.Windows
             });
 
             Trace.WriteLine("保存成功!");
+        }
+
+        /// <summary>
+        /// 执行周期逻辑
+        /// </summary>
+        private void CycleExecute()
+        {
+            //执行周期
+            foreach (var item in FishCollection)
+            {
+                //成长事件
+                item.GrowUp();
+            }
+
+            //触发生育事件
+            FishManager.Reproduction(FishCollection);
+            //清理死亡尸体
+            FishManager.ClearDeathBody(FishCollection);
         }
     }
 }

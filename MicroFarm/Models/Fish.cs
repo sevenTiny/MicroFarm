@@ -24,6 +24,8 @@ namespace MicroFarm.Models
             }
         }
 
+        private FishMetaData _Meta = null;
+
         #region 存储属性
         /// <summary>
         /// 对象Id
@@ -42,8 +44,7 @@ namespace MicroFarm.Models
             set
             {
                 _Age = value;
-                var meta = FishManager.GetFishMeta(Category);
-                Size = _Age < meta.AdultAge ? (meta.MaxSize * ((double)_Age / meta.AdultAge)) : meta.MaxSize;
+                Size = _Age < _Meta.AdultAge ? (_Meta.MaxSize * ((double)_Age / _Meta.AdultAge)) : _Meta.MaxSize;
                 NotifyPropertyChanged(nameof(Size));
             }
         }
@@ -141,6 +142,11 @@ namespace MicroFarm.Models
         /// </summary>
         [XmlIgnore]
         public Storyboard Storyboard { get; set; }
+        /// <summary>
+        /// 是否死亡
+        /// </summary>
+        [XmlIgnore]
+        public bool IsDeath { get; set; } = false;
         #endregion
 
         /// <summary>
@@ -148,6 +154,9 @@ namespace MicroFarm.Models
         /// </summary>
         public void Init()
         {
+            //获取元数据
+            _Meta = FishManager.GetFishMeta(Category);
+
             //初始化时，附加元属性
             FishManager.AttatchMetaProperty(this);
         }
@@ -158,15 +167,16 @@ namespace MicroFarm.Models
         public void Referesh(double left, double top)
         {
             //更新当前位置
-            Left = left;
-            Top = top;
+            Left = left; Top = top;
 
             //刷新目标位置
             RefereshAim();
             //调整角度
             RefereshAngle();
             //刷新运动速度
-            RealTimeSpeed = NumberHelper.GetRandomInt(GameConst.RefereshIntervalSeconds, FishManager.GetFishMeta(Category).DefaultSpeed);
+            RefereshSpeed();
+            //触发死亡事件
+            TriggerDeath();
 
             //打印日志
             LogInfo();
@@ -184,23 +194,47 @@ namespace MicroFarm.Models
                 RefereshAimPosition();
             }
             //命中几率
-            else if (NumberHelper.GetRandomInt(0, 100) < GameConst.RefereshAimRate * 100)
+            else if (RandomHelper.IsHitRate(GameConst.RefereshAimRate))
             {
                 Trace.WriteLine("Hit Probability !!!!!!!!");
                 RefereshAimPosition();
             }
-        }
 
-        private void RefereshAimPosition()
-        {
-            AimLeft = NumberHelper.GetRandomInt(GameConst.MinLeft, GameConst.MaxLeft);
-            AimTop = NumberHelper.GetRandomInt(GameConst.MinTop, GameConst.MaxTop);
+            void RefereshAimPosition()
+            {
+                AimLeft = RandomHelper.GetRandomInt(GameConst.MinLeft, GameConst.MaxLeft);
+                AimTop = RandomHelper.GetRandomInt(GameConst.MinTop, GameConst.MaxTop);
+            }
         }
-
+        /// <summary>
+        /// 调整角度
+        /// </summary>
         private void RefereshAngle()
         {
             //调整角度
             Angle = ((int)(Math.Atan2((AimTop - Top), (AimLeft - Left)) * 180 / Math.PI));
+        }
+        /// <summary>
+        /// 刷新运动速度
+        /// </summary>
+        private void RefereshSpeed()
+        {
+            RealTimeSpeed = RandomHelper.GetRandomInt(GameConst.RefereshIntervalSeconds, _Meta.DefaultSpeed);
+        }
+        /// <summary>
+        /// 触发死亡
+        /// </summary>
+        private void TriggerDeath()
+        {
+            if (Age >= _Meta.MaxAge)
+            {
+                if (RandomHelper.IsHitRate(_Meta.MaxAgeDeathRate))
+                    IsDeath = true;
+            }
+            else if (RandomHelper.IsHitRate(_Meta.NormalDeathRate))
+            {
+                IsDeath = true;
+            }
         }
 
         /// <summary>
@@ -209,19 +243,24 @@ namespace MicroFarm.Models
         public void GrowUp()
         {
             Age++;
+
+            Trace.WriteLine($"----------------- GrowUp -------------------");
+            Trace.WriteLine($"|\tId={Id}");
+            Trace.WriteLine($"|\tAge={Age}");
+            Trace.WriteLine($"--------------------------------------------");
         }
 
         private void LogInfo()
         {
-            Trace.WriteLine("--------------------------------------------");
-            Trace.WriteLine($"Id={Id}");
-            Trace.WriteLine($"AimLeft={AimLeft}\tAimTop={AimTop}");
-            Trace.WriteLine($"Left={Left}\tTop={Top}");
-            Trace.WriteLine($"Angle={Angle}");
-            Trace.WriteLine($"RealTimeSpeed={RealTimeSpeed}");
-            Trace.WriteLine($"Size={Size}");
-            Trace.WriteLine($"Age={Age}");
-            Trace.WriteLine("--------------------------------------------");
+            Trace.WriteLine($"------------------ Referesh ----------------");
+            Trace.WriteLine($"|\tId={Id}");
+            Trace.WriteLine($"|\tAimLeft={AimLeft}\tAimTop={AimTop}");
+            Trace.WriteLine($"|\tLeft={Left}\tTop={Top}");
+            Trace.WriteLine($"|\tAngle={Angle}");
+            Trace.WriteLine($"|\tRealTimeSpeed={RealTimeSpeed}");
+            Trace.WriteLine($"|\tSize={Size}");
+            Trace.WriteLine($"|\tAge={Age}");
+            Trace.WriteLine($"--------------------------------------------");
         }
     }
 }
