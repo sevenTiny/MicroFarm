@@ -215,7 +215,6 @@ namespace MicroFarm.Models
 
             Storyboard.Begin();//开启时间线动画
         }
-
         /// <summary>
         /// 刷新机制
         /// </summary>
@@ -292,7 +291,6 @@ namespace MicroFarm.Models
                 }
             }
         }
-
         /// <summary>
         /// 成长事件
         /// </summary>
