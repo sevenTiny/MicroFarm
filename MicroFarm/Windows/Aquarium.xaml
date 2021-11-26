@@ -58,7 +58,7 @@
                 <RowDefinition Height="3*"></RowDefinition>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="1" HorizontalAlignment="Center">
-                <ContentControl Content="正在执行初始化..." FontFamily="Microsoft YaHei UI" FontSize="20" FontWeight="Bold"></ContentControl>
+                <ContentControl Content="资源加载中..." FontFamily="Microsoft YaHei UI" FontSize="20" FontWeight="Bold"></ContentControl>
             </TextBlock>
             <controls:ProgressBarControl Grid.Row="2" Margin="10,0" ProgressBarValue="{Binding StartProgressBarValue}"></controls:ProgressBarControl>
             <Grid.Style>
