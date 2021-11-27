@@ -311,6 +311,10 @@ namespace MicroFarm.Models
             if (IsReproduction || IsDeath)
                 return;
 
+            //如果已经达到鱼池鱼的上限，则不触发
+            if (GameContext.Instance.FishCount >= GameConst.MaxFishCount)
+                return;
+
             //如果生育率为0，则不处理生育事件
             if (_Meta.ReproductionRate <= 0)
                 return;

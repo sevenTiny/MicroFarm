@@ -18,5 +18,9 @@
         /// 一个周期（秒）
         /// </summary>
         public const int CycleIntervalSeconds = 60;
+        /// <summary>
+        /// 鱼的最大上限
+        /// </summary>
+        public const int MaxFishCount = 100;
     }
 }
