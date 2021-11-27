@@ -34,11 +34,16 @@ namespace MicroFarm.Managers
         /// 保存资源
         /// </summary>
         /// <param name="data"></param>
-        public static void SaveData(AquariumData data)
+        public static void SaveData()
         {
             XmlSerializer serializer = new(typeof(AquariumData));
             using FileStream stream = new(AquariumDataFile, FileMode.Create, FileAccess.Write);
-            serializer.Serialize(stream, data);
+            serializer.Serialize(stream, new AquariumData
+            {
+                LastSavaTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                FishData = SaveFish.ToSaveFish(GameContext.Instance.FishCollection.ToList()),
+                Gold = GameContext.Instance.Gold
+            });
         }
     }
 
@@ -65,6 +70,7 @@ namespace MicroFarm.Managers
     public class SaveFish
     {
         public string Id { get; set; }
+        public string Name { get; set; }
         public int Category { get; set; }
         public int Age { get; set; }
         public string BirthDay { get; set; }
@@ -77,6 +83,7 @@ namespace MicroFarm.Managers
             return saveFishs.Select(t => new Fish
             {
                 Id = t.Id,
+                Name = t.Name,
                 Category = t.Category,
                 Age = t.Age,
                 BirthDay = t.BirthDay
@@ -91,6 +98,7 @@ namespace MicroFarm.Managers
             return fishs.Select(t => new SaveFish
             {
                 Id = t.Id,
+                Name = t.Name,
                 Category = t.Category,
                 Age = t.Age,
                 BirthDay = t.BirthDay

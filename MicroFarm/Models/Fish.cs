@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
@@ -33,6 +34,10 @@ namespace MicroFarm.Models
         /// 对象Id
         /// </summary>
         public string Id { get; set; }
+        /// <summary>
+        /// 鱼的名字
+        /// </summary>
+        public string Name { get; set; }
         /// <summary>
         /// 种类Id
         /// </summary>
@@ -142,7 +147,11 @@ namespace MicroFarm.Models
         /// <summary>
         /// 是否死亡
         /// </summary>
-        public bool IsDeath { get; set; } = false;
+        public bool IsDeath { get; set; }
+        /// <summary>
+        /// 是否怀孕
+        /// </summary>
+        public bool IsReproduction { get; set; }
         #endregion
 
         public Fish()
@@ -220,9 +229,19 @@ namespace MicroFarm.Models
             RefereshSpeed();
             //触发死亡事件
             TriggerDeath();
+            //出发生育事件
+            TriggerReproduction();
 
             //打印日志
-            LogInfo();
+            DebugHelper.WriteLine($"------------------ Referesh ----------------");
+            DebugHelper.WriteLine($"|\tId={Id}");
+            DebugHelper.WriteLine($"|\tAimLeft={AimLeft}\tAimTop={AimTop}");
+            DebugHelper.WriteLine($"|\tLeft={Left}\tTop={Top}");
+            DebugHelper.WriteLine($"|\tAngle={Angle}");
+            DebugHelper.WriteLine($"|\tRealTimeSpeed={RealTimeSpeed}");
+            DebugHelper.WriteLine($"|\tSize={Size}");
+            DebugHelper.WriteLine($"|\tAge={Age}");
+            DebugHelper.WriteLine($"--------------------------------------------");
         }
 
         /// <summary>
@@ -272,6 +291,8 @@ namespace MicroFarm.Models
             //死亡后，停止移动动画
             if (IsDeath)
             {
+                GameContext.Instance.WriteLog_Aquarium("有一条鱼死亡了...");
+
                 //如果动画没停，先将动画停止
                 if (Storyboard != null && Storyboard.GetCurrentState() != ClockState.Stopped)
                 {
@@ -281,29 +302,40 @@ namespace MicroFarm.Models
             }
         }
         /// <summary>
+        /// 触发生育
+        /// </summary>
+        /// <param name="collection"></param>
+        public void TriggerReproduction()
+        {
+            //如果已经怀孕或者已经死亡，则不会触发
+            if (IsReproduction || IsDeath)
+                return;
+
+            //如果生育率为0，则不处理生育事件
+            if (_Meta.ReproductionRate <= 0)
+                return;
+
+            //校验处于生育年龄
+            if (Age < _Meta.AdultAge || Age >= _Meta.MaxAge)
+                return;
+
+            //关联的种类的元数据
+            var relaMeta = _Meta.ReproductionRelationCategory == Category ? _Meta : FishManager.GetFishMeta(_Meta.ReproductionRelationCategory);
+
+            //校验是否存在关联到达生育年龄的鱼
+            if (!GameContext.Instance.FishCollection.Any(t => relaMeta.AdultAge <= t.Age && t.Age < relaMeta.MaxAge))
+                return;
+
+            //命中生育率，则触发生育
+            if (RandomHelper.IsHitRate(_Meta.ReproductionRate))
+                IsReproduction = true;
+        }
+        /// <summary>
         /// 成长事件
         /// </summary>
         public void GrowUp()
         {
             Age++;
-
-            OutPutHelper.WriteLine($"----------------- GrowUp -------------------");
-            OutPutHelper.WriteLine($"|\tId={Id}");
-            OutPutHelper.WriteLine($"|\tAge={Age}");
-            OutPutHelper.WriteLine($"--------------------------------------------");
-        }
-
-        private void LogInfo()
-        {
-            OutPutHelper.WriteLine($"------------------ Referesh ----------------");
-            OutPutHelper.WriteLine($"|\tId={Id}");
-            OutPutHelper.WriteLine($"|\tAimLeft={AimLeft}\tAimTop={AimTop}");
-            OutPutHelper.WriteLine($"|\tLeft={Left}\tTop={Top}");
-            OutPutHelper.WriteLine($"|\tAngle={Angle}");
-            OutPutHelper.WriteLine($"|\tRealTimeSpeed={RealTimeSpeed}");
-            OutPutHelper.WriteLine($"|\tSize={Size}");
-            OutPutHelper.WriteLine($"|\tAge={Age}");
-            OutPutHelper.WriteLine($"--------------------------------------------");
         }
     }
 }

@@ -5,12 +5,14 @@
 	<FishData>
 		<Fish>
 			<Id>6871e6d5-d6e7-4915-8351-ee07232dd1ad</Id>
+			<Name>苏黎世</Name>
 			<Category>0</Category>
 			<Age>100</Age>
 			<BirthDay>2021-11-24 22:53:40</BirthDay>
 		</Fish>
 		<Fish>
 			<Id>e1c5869e-99e7-4729-93a0-fc38900dd049</Id>
+			<Name>香榭1号</Name>
 			<Category>1</Category>
 			<Age>100</Age>
 			<BirthDay>2021-11-24 22:53:40</BirthDay>

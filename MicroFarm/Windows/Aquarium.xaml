@@ -163,7 +163,7 @@
             </Grid>
         </Grid>
         <!--顶初始化层-->
-        <Grid x:Name="startViewGrid"  Panel.ZIndex="2" Opacity="0.8" Background="White" Visibility="Hidden">
+        <Grid x:Name="startViewGrid"  Panel.ZIndex="2" Opacity="0.8" Background="White" Visibility="Visible">
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*"></RowDefinition>
                 <RowDefinition></RowDefinition>

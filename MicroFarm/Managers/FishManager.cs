@@ -59,6 +59,7 @@ namespace MicroFarm.Managers
             return AttatchMetaProperty(new Fish
             {
                 Id = Guid.NewGuid().ToString(),
+                Name = RandomHelper.GenerateSurname(),
                 Category = selectedMeta.Category,
                 Age = selectedMeta.BirthAge,
                 Source = selectedMeta.Source,
@@ -81,39 +82,19 @@ namespace MicroFarm.Managers
         }
 
         /// <summary>
-        /// 生育事件
+        /// 添加新生鱼
         /// </summary>
         /// <param name="collection"></param>
-        public static List<Fish> Reproduction(ObservableCollection<Fish> collection)
+        /// <param name="fish"></param>
+        public static void AddReproduction(ObservableCollection<Fish> collection, Fish fish)
         {
-            var newFishes = new List<Fish>();
-
-            foreach (var fish in collection)
+            if (fish.IsReproduction)
             {
-                //鱼元数据
-                var meta = GetFishMeta(fish.Category);
-
-                //如果生育率为0，则不处理生育事件
-                if (meta.ReproductionRate <= 0)
-                    continue;
-
-                //校验处于生育年龄
-                if (fish.Age < meta.AdultAge || fish.Age >= meta.MaxAge)
-                    continue;
-
-                //关联的种类的元数据
-                var relaMeta = meta.ReproductionRelationCategory == fish.Category ? meta : GetFishMeta(meta.ReproductionRelationCategory);
-
-                //校验是否存在关联到达生育年龄的鱼
-                if (!collection.Any(t => relaMeta.AdultAge <= t.Age && t.Age < relaMeta.MaxAge))
-                    continue;
-
-                //命中生育率，则触发生育
-                if (RandomHelper.IsHitRate(meta.ReproductionRate))
-                    newFishes.Add(GenerateFish(meta.Species));
+                //新生一个鱼
+                collection.Add(GenerateFish(fish.Category));
+                //标记成未怀孕
+                fish.IsReproduction = false;
             }
-
-            return newFishes;
         }
 
         /// <summary>

@@ -35,10 +35,6 @@ namespace MicroFarm.Windows
                 PropertyChanged(this, new PropertyChangedEventArgs(info));
             }
         }
-        ///// <summary>
-        ///// 鱼类集合
-        ///// </summary>
-        //public ObservableCollection<Fish> GameContext.Instance.FishCollection { get; set; } = new ObservableCollection<Fish>();
         /// <summary>
         /// 启动进度
         /// </summary>
@@ -83,7 +79,7 @@ namespace MicroFarm.Windows
         {
             //初始化水族数据
             InitAquarium();
-            //延时1s后启动水族
+            //延时1s后启动水族箱
             IProgress<int> progress = new Progress<int>(val => RefereshEvent(null, null));
             Task.Run(() => { Thread.Sleep(1000); progress.Report(1); });
         }
@@ -103,6 +99,7 @@ namespace MicroFarm.Windows
                 GameContext.Instance.FishCollection.Add(item);
             }
 
+            #region 追踪周期事件
             //跟踪周期事件到此刻
             var lastSaveData = Convert.ToDateTime(loadData.LastSavaTime);
 
@@ -137,6 +134,7 @@ namespace MicroFarm.Windows
                     });
                 });
             }
+            #endregion
         }
 
         /// <summary>
@@ -155,8 +153,12 @@ namespace MicroFarm.Windows
                 //绑定元素到对象
                 fish.Binding(item);
 
+                //新增新生鱼
+                FishManager.AddReproduction(GameContext.Instance.FishCollection, fish);
+
                 //清理死亡尸体
                 FishManager.ClearDeathBody(GameContext.Instance.FishCollection, fish);
+
             }
         }
 
@@ -169,23 +171,18 @@ namespace MicroFarm.Windows
         {
             if (!GameContext.Instance.IsAddCycleEventFinished_Fish)
             {
-                OutPutHelper.WriteLine($"周期追踪还未完成，暂时无法触发新的周期！");
                 return;
             }
 
-            OutPutHelper.WriteLine("正在保存...");
+            GameContext.Instance.WriteLog_Aquarium("正在保存...");
 
             //执行周期函数
             CycleExecute();
 
             //保存数据
-            DataManager.SaveData(new AquariumData
-            {
-                LastSavaTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                FishData = SaveFish.ToSaveFish(GameContext.Instance.FishCollection.ToList())
-            });
+            DataManager.SaveData();
 
-            OutPutHelper.WriteLine("保存成功!");
+            GameContext.Instance.WriteLog_Aquarium("保存成功!");
         }
 
         /// <summary>
@@ -199,16 +196,6 @@ namespace MicroFarm.Windows
                 //成长事件
                 item.GrowUp();
             }
-
-            #region 生育事件
-            //Task.Run(() =>
-            //{
-            var newFishes = FishManager.Reproduction(GameContext.Instance.FishCollection);
-
-            if (newFishes.Any())
-                this.Dispatcher.Invoke(() => { newFishes.ForEach(item => GameContext.Instance.FishCollection.Add(item)); });
-            //});
-            #endregion
         }
 
         private void DoubleAnimation_Completed(object sender, EventArgs e)

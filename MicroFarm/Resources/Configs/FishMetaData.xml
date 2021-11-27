@@ -27,7 +27,7 @@
 		<MaxAgeDeathRate>0.01</MaxAgeDeathRate>
 		<!--生殖率-->
 		<ReproductionRate>0</ReproductionRate>
-		<!--生殖关联种类，如果存在关联，则水族中必须同时存在另一种成年鱼，才会触发生殖。如果不需要关联，则可以填自己-->
+		<!--生殖关联种类，如果存在关联，则水族中必须同时存在另一种成年鱼，才会触发生殖。如果不需要关联(自我繁殖)，则可以填自己-->
 		<ReproductionRelationCategory>1</ReproductionRelationCategory>
 	</FishMetaData>
 	<FishMetaData>
