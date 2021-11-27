@@ -41,6 +41,8 @@ namespace MicroFarm
                 Storyboard.SetTarget(animation, AquariumWindow.logTextBox);
                 Storyboard.SetTargetProperty(animation, new PropertyPath("Opacity"));
                 _logStoryBoard_Aquarium.Children.Add(animation);
+                //文字消失时，清除历史文字
+                _logStoryBoard_Aquarium.Completed += (sender, e) => { _AquariumWindow.logTextBox.Text = String.Empty; };
                 //绑定鱼数量事件
                 FishCollection.CollectionChanged += (sender, e) => { FishCount = FishCollection.Count; };
             }
