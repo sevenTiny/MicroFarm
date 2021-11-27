@@ -61,7 +61,6 @@ namespace MicroFarm.Models
         /// <summary>
         /// 左坐标
         /// </summary>
-        [XmlIgnore]
         public double Left
         {
             get
@@ -78,7 +77,6 @@ namespace MicroFarm.Models
         /// <summary>
         /// 上坐标
         /// </summary>
-        [XmlIgnore]
         public double Top
         {
             get
@@ -95,12 +93,10 @@ namespace MicroFarm.Models
         /// <summary>
         /// 尺寸
         /// </summary>
-        [XmlIgnore]
         public double Size { get; set; }
         /// <summary>
         /// 角度
         /// </summary>
-        [XmlIgnore]
         public int Angle
         {
             get { return _Angle; }
@@ -110,17 +106,14 @@ namespace MicroFarm.Models
         /// <summary>
         /// 目标左坐标
         /// </summary>
-        [XmlIgnore]
         public double AimLeft { get; set; }
         /// <summary>
         /// 目标上坐标
         /// </summary>
-        [XmlIgnore]
         public double AimTop { get; set; }
         /// <summary>
         /// 图片
         /// </summary>
-        [XmlIgnore]
         public string Source
         {
             get
@@ -129,7 +122,7 @@ namespace MicroFarm.Models
             }
             set
             {
-                _Source = Path.Combine(Environment.CurrentDirectory, @$"Resources/Images/{value}");
+                _Source = Path.Combine(Environment.CurrentDirectory, @$"Resources/Images/Fish/{value}");
                 NotifyPropertyChanged(nameof(Source));
             }
         }
@@ -137,22 +130,18 @@ namespace MicroFarm.Models
         /// <summary>
         /// 实时速度
         /// </summary>
-        [XmlIgnore]
         public int RealTimeSpeed { get; set; }
         /// <summary>
         /// 动画引用
         /// </summary>
-        [XmlIgnore]
         public Storyboard Storyboard { get; set; }
         /// <summary>
         /// 绑定元素
         /// </summary>
-        [XmlIgnore]
         public ContentPresenter ContentPresenter { get; set; }
         /// <summary>
         /// 是否死亡
         /// </summary>
-        [XmlIgnore]
         public bool IsDeath { get; set; } = false;
         #endregion
 
@@ -242,7 +231,7 @@ namespace MicroFarm.Models
         /// </summary>
         protected void RefereshAim()
         {
-            var window = GameContext.AquariumWindow;
+            var window = GameContext.Instance.AquariumWindow;
 
             var maxLeft = (int)((window.ActualWidth > 0 ? window.ActualWidth : window.Width) - Size);
             var maxTop = (int)((window.ActualHeight > 0 ? window.ActualHeight : window.Height) - Size);

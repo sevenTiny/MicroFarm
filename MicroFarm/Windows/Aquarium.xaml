@@ -39,17 +39,131 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="ViewButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate  TargetType="{x:Type Button}">
+                        <ControlTemplate.Resources>
+                            <Storyboard x:Key="Storyboard1">
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="grid">
+                                    <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="1.25"/>
+                                </DoubleAnimationUsingKeyFrames>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="grid">
+                                    <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="1.25"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                            <Storyboard x:Key="Storyboard2">
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="grid">
+                                    <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="grid">
+                                    <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </ControlTemplate.Resources>
+                        <Grid x:Name="grid" RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </Grid.RenderTransform>
+                            <Label Name="lbl" Content="{TemplateBinding Content}" Background="Transparent" Height="{TemplateBinding Height}"
+                           Width="{TemplateBinding Width}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True"/>
+                            <Trigger Property="IsDefaulted" Value="True"/>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <!--<Setter Property="Background" TargetName="lbl" Value="#330091FF"/>-->
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard x:Name="Storyboard_Copy1_BeginStoryboard" Storyboard="{StaticResource Storyboard2}"/>
+                                </Trigger.ExitActions>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard Storyboard="{StaticResource Storyboard1}"/>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <!--<Setter Property="Background" TargetName="lbl" Value="#000000FF"/>-->
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False"/>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <Grid>
-        <!--底层水族展示-->
-        <ItemsControl Panel.ZIndex="0" x:Name="fishItems" ItemsSource="{Binding FishCollection}" Style="{StaticResource MyItemsControlStyle}">
-            <ItemsControl.Background>
+        <!--背景层-->
+        <Grid Panel.ZIndex="-2">
+            <Grid.Background>
                 <ImageBrush ImageSource="/Resources/Images/background.jpg"/>
-            </ItemsControl.Background>
-        </ItemsControl>
+            </Grid.Background>
+        </Grid>
+        <!--日志层-->
+        <Grid Panel.ZIndex="-1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60px"></RowDefinition>
+                <RowDefinition Height="8*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="1">
+                <TextBox x:Name="logTextBox" Text="" Background="{x:Null}" IsReadOnly="True" TextWrapping="WrapWithOverflow" AcceptsReturn="True" Opacity="0.5" BorderBrush="{x:Null}" IsUndoEnabled="False" SelectionBrush="{x:Null}" SelectionTextBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Arrow" FontSize="16"/>
+            </Grid>
+        </Grid>
+        <!--底层水族展示-->
+        <ItemsControl Panel.ZIndex="0" x:Name="fishItems" ItemsSource="{Binding FishCollection}" Style="{StaticResource MyItemsControlStyle}"></ItemsControl>
         <!--界面交互层-->
-        <!--顶层执行初始化-->
-        <Grid x:Name="startViewGrid"  Panel.ZIndex="2" Opacity="0.8" Background="White" Visibility="Visible">
+        <Grid Panel.ZIndex="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60px"></RowDefinition>
+                <RowDefinition Height="8*"></RowDefinition>
+                <RowDefinition Height="1*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,-1" Opacity="0.4" MappingMode="RelativeToBoundingBox">
+                        <GradientStop Color="Black" Offset="1"/>
+                        <GradientStop Color="White" Offset="0.664"/>
+                        <GradientStop Color="#FF1493AB" Offset="0.985"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="7*"></ColumnDefinition>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="5">
+                        <Image Source="/Resources/Images/View/gold.png" Width="30" Margin="5"></Image>
+                        <Label VerticalAlignment="Center" Foreground="#FFFFAF00" FontSize="20" FontWeight="Bold" Content="{Binding Gold}"></Label>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="5">
+                        <Image Source="/Resources/Images/View/fish.png" Width="40" Margin="5"></Image>
+                        <Label VerticalAlignment="Center" Foreground="#FF009CFF" FontSize="20" FontWeight="Bold" Content="{Binding FishCount}"></Label>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Width="50" Margin="5" Style="{StaticResource ViewButtonStyle}">
+                        <Button.Content>
+                            <Image Source="/Resources/Images/View/shop.png"></Image>
+                        </Button.Content>
+                    </Button>
+                    <Button Width="50" Margin="5" Style="{StaticResource ViewButtonStyle}">
+                        <Button.Content>
+                            <Image Source="/Resources/Images/View/tool.png"></Image>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Grid>
+        <!--顶初始化层-->
+        <Grid x:Name="startViewGrid"  Panel.ZIndex="2" Opacity="0.8" Background="White" Visibility="Hidden">
             <Grid.RowDefinitions>
                 <RowDefinition Height="3*"></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -68,7 +182,9 @@
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
+                                        <!--隐藏动画-->
                                         <DoubleAnimation Duration="0:0:3.0" Storyboard.TargetProperty="Opacity" From="0.8" To="0" />
+                                        <!--移除动画-->
                                         <ObjectAnimationUsingKeyFrames Duration="0:0:3" Storyboard.TargetProperty="Visibility">
                                             <DiscreteObjectKeyFrame KeyTime="0:0:3">
                                                 <DiscreteObjectKeyFrame.Value>
@@ -76,7 +192,6 @@
                                                 </DiscreteObjectKeyFrame.Value>
                                             </DiscreteObjectKeyFrame>
                                         </ObjectAnimationUsingKeyFrames>
-
                                     </Storyboard>
                                 </BeginStoryboard>
                             </DataTrigger.EnterActions>

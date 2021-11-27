@@ -7,7 +7,7 @@ namespace MicroFarm.Helpers
         public static void WriteLine(string msg)
         {
             //加载完成才打印日志
-            if (GameContext.IsAddCycleEventFinished_Fish)
+            if (GameContext.Instance.IsAddCycleEventFinished_Fish)
                 Trace.WriteLine(msg);
         }
 

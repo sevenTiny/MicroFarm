@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <AquariumData>
 	<LastSavaTime>2021/11/24 22:53:40</LastSavaTime>
+	<Gold>0</Gold>
 	<FishData>
 		<Fish>
 			<Id>6871e6d5-d6e7-4915-8351-ee07232dd1ad</Id>

@@ -15,6 +15,10 @@
     <None Remove="Resources\Images\fish_0.png" />
     <None Remove="Resources\Images\fish_1.png" />
     <None Remove="Resources\Images\right.png" />
+    <None Remove="Resources\Images\View\fish.png" />
+    <None Remove="Resources\Images\View\gold.png" />
+    <None Remove="Resources\Images\View\shop.png" />
+    <None Remove="Resources\Images\View\tool.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,16 +31,28 @@
     <Content Include="Resources\Configs\GameData.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Images\fish_0.png">
+    <Content Include="Resources\Images\Fish\fish_0.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Images\fish_1.png">
+    <Content Include="Resources\Images\Fish\fish_1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Images\right.png">
+    <Content Include="Resources\Images\Fish\right.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Images\background.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\View\fish.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\View\gold.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\View\shop.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Images\View\tool.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

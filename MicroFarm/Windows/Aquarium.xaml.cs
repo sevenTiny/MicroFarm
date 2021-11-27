@@ -35,10 +35,10 @@ namespace MicroFarm.Windows
                 PropertyChanged(this, new PropertyChangedEventArgs(info));
             }
         }
-        /// <summary>
-        /// 鱼类集合
-        /// </summary>
-        public ObservableCollection<Fish> FishCollection { get; set; } = new ObservableCollection<Fish>();
+        ///// <summary>
+        ///// 鱼类集合
+        ///// </summary>
+        //public ObservableCollection<Fish> GameContext.Instance.FishCollection { get; set; } = new ObservableCollection<Fish>();
         /// <summary>
         /// 启动进度
         /// </summary>
@@ -65,9 +65,10 @@ namespace MicroFarm.Windows
         {
             InitializeComponent();
             //绑定窗体
-            GameContext.AquariumWindow = this;
+            GameContext.Instance.AquariumWindow = this;
             //绑定上下文
-            this.DataContext = this;
+            this.DataContext = GameContext.Instance;
+            startViewGrid.DataContext = this;
             //启动定时器
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(GameConst.RefereshIntervalSeconds) };
             _timer.Tick += RefereshEvent;
@@ -95,11 +96,11 @@ namespace MicroFarm.Windows
             var loadData = DataManager.LoadData();
 
             //加载数据
-            foreach (var item in loadData.FishData ?? new List<Fish>())
+            foreach (var item in SaveFish.ToFish(loadData.FishData))
             {
                 item.Init();
 
-                FishCollection.Add(item);
+                GameContext.Instance.FishCollection.Add(item);
             }
 
             //跟踪周期事件到此刻
@@ -112,8 +113,8 @@ namespace MicroFarm.Windows
                 //最大追踪6个小时
                 int addMinutes = diff > TimeSpan.FromHours(6) ? 360 : (int)diff.TotalMinutes;
 
-                OutPutHelper.WriteLine($"距离上次保存将追踪[{addMinutes}]个周期!");
-                OutPutHelper.WriteLine("开始追踪周期...");
+                GameContext.Instance.WriteLog_Aquarium($"距离上次保存将追踪[{addMinutes}]个周期!");
+                GameContext.Instance.WriteLog_Aquarium("开始追踪周期...");
 
                 Task.Run(() =>
                 {
@@ -124,13 +125,14 @@ namespace MicroFarm.Windows
                         //进度条
                         StartProgressBarValue = (int)((double)i / addMinutes * 100);
 
+                        GameContext.Instance.WriteLog_Aquarium($"当前追踪到第:{i}周期");
                         Thread.Sleep(5);
                     }
 
                     this.Dispatcher.Invoke(() =>
                     {
-                        OutPutHelper.WriteLine($"追踪周期完成!");
-                        GameContext.IsAddCycleEventFinished_Fish = true;
+                        GameContext.Instance.WriteLog_Aquarium($"追踪周期完成!");
+                        GameContext.Instance.IsAddCycleEventFinished_Fish = true;
                         StartViewVisibility = "Hidden";
                     });
                 });
@@ -154,7 +156,7 @@ namespace MicroFarm.Windows
                 fish.Binding(item);
 
                 //清理死亡尸体
-                FishManager.ClearDeathBody(FishCollection, fish);
+                FishManager.ClearDeathBody(GameContext.Instance.FishCollection, fish);
             }
         }
 
@@ -165,7 +167,7 @@ namespace MicroFarm.Windows
         /// <param name="a"></param>
         private void CycleEvent(object sender, EventArgs a)
         {
-            if (!GameContext.IsAddCycleEventFinished_Fish)
+            if (!GameContext.Instance.IsAddCycleEventFinished_Fish)
             {
                 OutPutHelper.WriteLine($"周期追踪还未完成，暂时无法触发新的周期！");
                 return;
@@ -180,7 +182,7 @@ namespace MicroFarm.Windows
             DataManager.SaveData(new AquariumData
             {
                 LastSavaTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                FishData = FishCollection.ToList()
+                FishData = SaveFish.ToSaveFish(GameContext.Instance.FishCollection.ToList())
             });
 
             OutPutHelper.WriteLine("保存成功!");
@@ -192,7 +194,7 @@ namespace MicroFarm.Windows
         private void CycleExecute()
         {
             //执行周期
-            foreach (var item in FishCollection)
+            foreach (var item in GameContext.Instance.FishCollection)
             {
                 //成长事件
                 item.GrowUp();
@@ -201,10 +203,10 @@ namespace MicroFarm.Windows
             #region 生育事件
             //Task.Run(() =>
             //{
-            var newFishes = FishManager.Reproduction(FishCollection);
+            var newFishes = FishManager.Reproduction(GameContext.Instance.FishCollection);
 
             if (newFishes.Any())
-                this.Dispatcher.Invoke(() => { newFishes.ForEach(item => FishCollection.Add(item)); });
+                this.Dispatcher.Invoke(() => { newFishes.ForEach(item => GameContext.Instance.FishCollection.Add(item)); });
             //});
             #endregion
         }
