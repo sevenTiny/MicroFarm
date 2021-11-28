@@ -1,4 +1,5 @@
-﻿using MicroFarm.Models;
+﻿using MicroFarm.Helpers;
+using MicroFarm.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace MicroFarm.Managers
 {
-    internal class DataManager
+    internal class AquariumDataManager
     {
         /// <summary>
         /// 鱼缸游戏数据
@@ -20,14 +21,7 @@ namespace MicroFarm.Managers
         /// <returns></returns>
         public static AquariumData LoadData()
         {
-            XmlSerializer serializer = new(typeof(AquariumData));
-            using FileStream stream = new(AquariumDataFile, FileMode.Open);
-            var data = (AquariumData)serializer.Deserialize(stream);
-
-            if (data == null)
-                throw new Exception($"加载数据失败，请检查数据文件:{AquariumDataFile}");
-
-            return data;
+            return SerializeHelper.LoadXml<AquariumData>(AquariumDataFile);
         }
 
         /// <summary>
@@ -36,9 +30,7 @@ namespace MicroFarm.Managers
         /// <param name="data"></param>
         public static void SaveData()
         {
-            XmlSerializer serializer = new(typeof(AquariumData));
-            using FileStream stream = new(AquariumDataFile, FileMode.Create, FileAccess.Write);
-            serializer.Serialize(stream, new AquariumData
+            SerializeHelper.SaveXml(AquariumDataFile, new AquariumData
             {
                 CycleNumber = GameContext.Instance.CycleNumber,
                 LastSavaTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),

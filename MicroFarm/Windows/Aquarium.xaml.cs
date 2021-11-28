@@ -2,6 +2,7 @@
 using MicroFarm.Managers;
 using MicroFarm.Models;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -89,7 +90,7 @@ namespace MicroFarm.Windows
         {
             GameContext.Instance.WriteLog_Aquarium("正在加载数据...");
 
-            var loadData = DataManager.LoadData();
+            var loadData = AquariumDataManager.LoadData();
 
             //赋值周期数
             GameContext.Instance.CycleNumber = loadData.CycleNumber;
@@ -185,7 +186,7 @@ namespace MicroFarm.Windows
             CycleExecute();
 
             //保存数据
-            DataManager.SaveData();
+            AquariumDataManager.SaveData();
 
             //打印周期报告
             GameContext.Instance.WriteLog_Aquarium(
@@ -222,7 +223,7 @@ namespace MicroFarm.Windows
 
         private void ViewLog_Click(object sender, RoutedEventArgs e)
         {
-            GameContext.Instance.ViewLog();
+            GameContext.Instance.ViewLog_Aquarium();
         }
 
         private void DoubleAnimation_Completed(object sender, EventArgs e)

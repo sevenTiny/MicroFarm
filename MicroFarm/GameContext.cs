@@ -1,4 +1,5 @@
-﻿using MicroFarm.Models;
+﻿using MicroFarm.Managers;
+using MicroFarm.Models;
 using MicroFarm.Windows;
 using System;
 using System.Collections.ObjectModel;
@@ -26,6 +27,8 @@ namespace MicroFarm
         private GameContext() { }
         public static readonly GameContext Instance = new();
 
+        #region 水族箱
+
         /// <summary>
         /// 水族窗体
         /// </summary>
@@ -35,7 +38,8 @@ namespace MicroFarm
             set
             {
                 _AquariumWindow = value;
-                //绑定水族控件
+
+                //绑定日志看板
                 _logStoryBoard_Aquarium = new Storyboard();
                 var animation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromSeconds(GameConst.LogDisplayTimeSeconds)));
                 Storyboard.SetTarget(animation, AquariumWindow.logTextBox);
@@ -48,24 +52,16 @@ namespace MicroFarm
                     if (_AquariumWindow.logTextBox.Text.Length > 10000)
                         _AquariumWindow.logTextBox.Text = string.Empty;
                 };
+
                 //绑定鱼数量事件
                 FishCollection.CollectionChanged += (sender, e) => { FishCount = FishCollection.Count; };
+
+                //绑定背景
+                ChangeAquariumBackgroundImage(string.Empty);
             }
         }
         private Aquarium _AquariumWindow;
-        /// <summary>
-        /// 周期数
-        /// </summary>
-        public long CycleNumber { get; set; }
-        /// <summary>
-        /// 追踪周期是否完成
-        /// </summary>
-        public bool IsAddCycleEventFinished_Fish { get; set; } = false;
-        /// <summary>
-        /// 金币数
-        /// </summary>
-        public int Gold { get => _Gold; set { _Gold = value; NotifyPropertyChanged(nameof(Gold)); } }
-        private int _Gold = 0;
+
         /// <summary>
         /// 鱼类集合
         /// </summary>
@@ -75,6 +71,67 @@ namespace MicroFarm
         /// </summary>
         public int FishCount { get => _FishCount; set { _FishCount = value; NotifyPropertyChanged(nameof(FishCount)); } }
         private int _FishCount = 0;
+
+        /// <summary>
+        /// 水族箱背景
+        /// </summary>
+        public string AquariumBackgroundImage { get; set; }
+        /// <summary>
+        /// 切换水族箱背景
+        /// </summary>
+        /// <param name="image"></param>
+        public void ChangeAquariumBackgroundImage(string image)
+        {
+            if (string.IsNullOrEmpty(image))
+            {
+                AquariumBackgroundImage = $"/Resources/Images/Background/{GameDataManager.Get("AquariumBackgroundImage")}";
+            }
+
+            NotifyPropertyChanged(nameof(AquariumBackgroundImage));
+        }
+
+        /// <summary>
+        /// 周期数
+        /// </summary>
+        public long CycleNumber { get; set; }
+        /// <summary>
+        /// 追踪周期是否完成
+        /// </summary>
+        public bool IsAddCycleEventFinished_Fish { get; set; } = false;
+
+        #region 日志
+        private Storyboard _logStoryBoard_Aquarium;
+        /// <summary>
+        /// 展示日志
+        /// </summary>
+        public void ViewLog_Aquarium()
+        {
+            AquariumWindow.logTextBox.Opacity = 1;
+
+            //消失动画
+            _logStoryBoard_Aquarium.Stop();
+            _logStoryBoard_Aquarium.Begin();
+        }
+        /// <summary>
+        /// 记录水族日志
+        /// </summary>
+        /// <param name="msg"></param>
+        public void WriteLog_Aquarium(string msg)
+        {
+            WriteLog(AquariumWindow, AquariumWindow.logTextBox, _logStoryBoard_Aquarium, msg);
+        }
+        #endregion
+
+        #endregion
+
+        #region 通用
+
+        /// <summary>
+        /// 金币数
+        /// </summary>
+        public int Gold { get => _Gold; set { _Gold = value; NotifyPropertyChanged(nameof(Gold)); } }
+        private int _Gold = 0;
+
         /// <summary>
         /// 是否展示图形界面
         /// </summary>
@@ -83,7 +140,6 @@ namespace MicroFarm
         /// 图形界面可见度
         /// </summary>
         public string DisplayGraphicsVisible { get; set; } = "Visible";
-
         /// <summary>
         /// 切换图形界面展示
         /// </summary>
@@ -102,28 +158,6 @@ namespace MicroFarm
 
             NotifyPropertyChanged(nameof(DisplayGraphicsVisible));
             NotifyPropertyChanged(nameof(IsDisplayGraphics));
-        }
-
-        #region 水族箱日志
-        private Storyboard _logStoryBoard_Aquarium;
-        /// <summary>
-        /// 展示日志
-        /// </summary>
-        public void ViewLog()
-        {
-            AquariumWindow.logTextBox.Opacity = 1;
-
-            //消失动画
-            _logStoryBoard_Aquarium.Stop();
-            _logStoryBoard_Aquarium.Begin();
-        }
-        /// <summary>
-        /// 记录水族日志
-        /// </summary>
-        /// <param name="msg"></param>
-        public void WriteLog_Aquarium(string msg)
-        {
-            WriteLog(AquariumWindow, AquariumWindow.logTextBox, _logStoryBoard_Aquarium, msg);
         }
 
         /// <summary>
@@ -152,6 +186,7 @@ namespace MicroFarm
                 storyboard.Begin();
             });
         }
+
         #endregion
     }
 }

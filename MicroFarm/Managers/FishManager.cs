@@ -19,14 +19,7 @@ namespace MicroFarm.Managers
 
         static FishManager()
         {
-            XmlSerializer serializer = new(typeof(List<FishMetaData>));
-            using FileStream stream = new(FishMetaDataFile, FileMode.Open);
-            var metadata = (List<FishMetaData>)serializer.Deserialize(stream);
-
-            if (metadata == null)
-                throw new Exception("加载鱼类元数据失败");
-
-            _FishMetaDic = metadata.ToDictionary(k => k.Category);
+            _FishMetaDic = SerializeHelper.LoadXml<List<FishMetaData>>(FishMetaDataFile).ToDictionary(k => k.Category);
         }
 
         /// <summary>
