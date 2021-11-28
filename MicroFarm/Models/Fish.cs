@@ -2,13 +2,11 @@
 using MicroFarm.Managers;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using System.Xml.Serialization;
 
 namespace MicroFarm.Models
 {
@@ -99,6 +97,11 @@ namespace MicroFarm.Models
             private set { _Angle = value; NotifyPropertyChanged(nameof(Angle)); }
         }
         private int _Angle = 0;
+        /// <summary>
+        /// 缩放比例
+        /// </summary>
+        public int ScaleX { get => _ScaleX; set { _ScaleX = value; NotifyPropertyChanged(nameof(ScaleX)); } }
+        private int _ScaleX = 1;
         /// <summary>
         /// 目标左坐标
         /// </summary>
@@ -257,6 +260,22 @@ namespace MicroFarm.Models
         {
             //调整角度
             Angle = ((int)(Math.Atan2((AimTop - Top), (AimLeft - Left)) * 180 / Math.PI));
+
+            //调整角度和翻转
+            if (Angle < -90)
+            {
+                Angle = -Angle - 180;
+                ScaleX = -1;
+            }
+            else if (-90 <= Angle && Angle <= 90)
+            {
+                ScaleX = 1;
+            }
+            else if (Angle > 90)
+            {
+                Angle = 180 - Angle;
+                ScaleX = -1;
+            }
         }
         /// <summary>
         /// 刷新运动速度
