@@ -1,18 +1,12 @@
-﻿using MicroFarm.Configs;
-using MicroFarm.Helpers;
+﻿using MicroFarm.Helpers;
 using MicroFarm.Managers;
 using MicroFarm.Models;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 namespace MicroFarm.Windows
@@ -80,7 +74,11 @@ namespace MicroFarm.Windows
             //初始化水族数据
             InitAquarium();
             //延时1s后启动水族箱
-            IProgress<int> progress = new Progress<int>(val => RefereshEvent(null, null));
+            IProgress<int> progress = new Progress<int>(val =>
+            {
+                RefereshEvent(null, null);
+                GameContext.Instance.WriteLog_Aquarium("启动水族箱...");
+            });
             Task.Run(() => { Thread.Sleep(1000); progress.Report(1); });
         }
 
@@ -89,7 +87,12 @@ namespace MicroFarm.Windows
         /// </summary>
         public void InitAquarium()
         {
+            GameContext.Instance.WriteLog_Aquarium("正在加载数据...");
+
             var loadData = DataManager.LoadData();
+
+            //赋值周期数
+            GameContext.Instance.CycleNumber = loadData.CycleNumber;
 
             //加载数据
             foreach (var item in SaveFish.ToFish(loadData.FishData))
@@ -122,7 +125,7 @@ namespace MicroFarm.Windows
                         //进度条
                         StartProgressBarValue = (int)((double)i / addMinutes * 100);
 
-                        GameContext.Instance.WriteLog_Aquarium($"当前追踪到第:{i}周期");
+                        GameContext.Instance.WriteLog_Aquarium($"当前追踪到第:{GameContext.Instance.CycleNumber}周期");
                         Thread.Sleep(5);
                     }
 
@@ -174,7 +177,9 @@ namespace MicroFarm.Windows
                 return;
             }
 
-            GameContext.Instance.WriteLog_Aquarium("正在保存...");
+            GameContext.Instance.WriteLog_Aquarium(
+@$"
+{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} 正在保存...");
 
             //执行周期函数
             CycleExecute();
@@ -182,7 +187,17 @@ namespace MicroFarm.Windows
             //保存数据
             DataManager.SaveData();
 
-            GameContext.Instance.WriteLog_Aquarium("保存成功!");
+            //打印周期报告
+            GameContext.Instance.WriteLog_Aquarium(
+@$"
+------------------周期报告------------------
+周期 [{GameContext.Instance.CycleNumber}]
+金币数:{GameContext.Instance.Gold}
+存活数:{GameContext.Instance.FishCount}
+--------------------------------------------
+
+保存成功!
+");
         }
 
         /// <summary>
@@ -190,12 +205,24 @@ namespace MicroFarm.Windows
         /// </summary>
         private void CycleExecute()
         {
-            //执行周期
+            GameContext.Instance.CycleNumber++;
+
+            //执行周期鱼事件
             foreach (var item in GameContext.Instance.FishCollection)
             {
                 //成长事件
                 item.GrowUp();
             }
+        }
+
+        private void ChangeGraphicsVisible_Click(object sender, RoutedEventArgs e)
+        {
+            GameContext.Instance.ChangeGraphicsVisible();
+        }
+
+        private void ViewLog_Click(object sender, RoutedEventArgs e)
+        {
+            GameContext.Instance.ViewLog();
         }
 
         private void DoubleAnimation_Completed(object sender, EventArgs e)

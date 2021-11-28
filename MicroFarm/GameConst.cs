@@ -1,4 +1,4 @@
-﻿namespace MicroFarm.Configs
+﻿namespace MicroFarm
 {
     internal class GameConst
     {
@@ -18,6 +18,10 @@
         /// 一个周期（秒）
         /// </summary>
         public const int CycleIntervalSeconds = 60;
+        /// <summary>
+        /// 日志展示时间
+        /// </summary>
+        public const int LogDisplayTimeSeconds = 20;
         /// <summary>
         /// 鱼的最大上限
         /// </summary>

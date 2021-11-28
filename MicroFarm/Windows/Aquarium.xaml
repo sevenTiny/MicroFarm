@@ -101,7 +101,7 @@
     </Window.Resources>
     <Grid>
         <!--背景层-->
-        <Grid Panel.ZIndex="-2">
+        <Grid Panel.ZIndex="-2" Visibility="{Binding DisplayGraphicsVisible}">
             <Grid.Background>
                 <ImageBrush ImageSource="/Resources/Images/background.jpg"/>
             </Grid.Background>
@@ -118,9 +118,9 @@
             </Grid>
         </Grid>
         <!--底层水族展示-->
-        <ItemsControl Panel.ZIndex="0" x:Name="fishItems" ItemsSource="{Binding FishCollection}" Style="{StaticResource MyItemsControlStyle}"></ItemsControl>
+        <ItemsControl Panel.ZIndex="0" x:Name="fishItems" ItemsSource="{Binding FishCollection}" Style="{StaticResource MyItemsControlStyle}" Visibility="{Binding DisplayGraphicsVisible}"></ItemsControl>
         <!--界面交互层-->
-        <Grid Panel.ZIndex="1">
+        <Grid Panel.ZIndex="1" Visibility="{Binding DisplayGraphicsVisible}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="60px"></RowDefinition>
                 <RowDefinition Height="8*"></RowDefinition>
@@ -200,5 +200,17 @@
                 </Style>
             </Grid.Style>
         </Grid>
+        <!--右键菜单-->
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="界面开关" Click="ChangeGraphicsVisible_Click">
+                    <MenuItem.Icon>
+                        <CheckBox IsEnabled="False" IsChecked="{Binding IsDisplayGraphics}"></CheckBox>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="显示日志" Click="ViewLog_Click">
+                </MenuItem>
+            </ContextMenu>
+        </Grid.ContextMenu>
     </Grid>
 </Window>

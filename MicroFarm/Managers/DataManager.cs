@@ -40,6 +40,7 @@ namespace MicroFarm.Managers
             using FileStream stream = new(AquariumDataFile, FileMode.Create, FileAccess.Write);
             serializer.Serialize(stream, new AquariumData
             {
+                CycleNumber = GameContext.Instance.CycleNumber,
                 LastSavaTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                 FishData = SaveFish.ToSaveFish(GameContext.Instance.FishCollection.ToList()),
                 Gold = GameContext.Instance.Gold
@@ -52,6 +53,10 @@ namespace MicroFarm.Managers
     /// </summary>
     public class AquariumData
     {
+        /// <summary>
+        /// 周期数
+        /// </summary>
+        public long CycleNumber { get; set; }
         /// <summary>
         /// 上次保存时间
         /// </summary>

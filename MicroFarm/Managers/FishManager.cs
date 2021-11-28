@@ -64,7 +64,7 @@ namespace MicroFarm.Managers
                 Age = selectedMeta.BirthAge,
                 Source = selectedMeta.Source,
                 BirthDay = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-            });
+            }.Init());
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace MicroFarm.Managers
         /// <returns></returns>
         public static Fish AttatchMetaProperty(Fish source)
         {
-            var meta = GetFishMeta(source.Category);
+            var meta = source.CurrentMeta;
 
             source.Source = meta.Source;
 
@@ -91,7 +91,7 @@ namespace MicroFarm.Managers
             if (fish.IsReproduction)
             {
                 //新生一个鱼
-                collection.Add(GenerateFish(fish.Category));
+                collection.Add(GenerateFish(fish.CurrentMeta.Species));
                 //标记成未怀孕
                 fish.IsReproduction = false;
             }

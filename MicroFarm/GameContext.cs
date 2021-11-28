@@ -24,7 +24,7 @@ namespace MicroFarm
         }
 
         private GameContext() { }
-        public static readonly GameContext Instance = new GameContext();
+        public static readonly GameContext Instance = new();
 
         /// <summary>
         /// 水族窗体
@@ -37,17 +37,26 @@ namespace MicroFarm
                 _AquariumWindow = value;
                 //绑定水族控件
                 _logStoryBoard_Aquarium = new Storyboard();
-                var animation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromSeconds(10)));
+                var animation = new DoubleAnimation(1, 0, new Duration(TimeSpan.FromSeconds(GameConst.LogDisplayTimeSeconds)));
                 Storyboard.SetTarget(animation, AquariumWindow.logTextBox);
                 Storyboard.SetTargetProperty(animation, new PropertyPath("Opacity"));
                 _logStoryBoard_Aquarium.Children.Add(animation);
                 //文字消失时，清除历史文字
-                _logStoryBoard_Aquarium.Completed += (sender, e) => { _AquariumWindow.logTextBox.Text = String.Empty; };
+                _logStoryBoard_Aquarium.Completed += (sender, e) =>
+                {
+                    //如果太长，则清空
+                    if (_AquariumWindow.logTextBox.Text.Length > 10000)
+                        _AquariumWindow.logTextBox.Text = string.Empty;
+                };
                 //绑定鱼数量事件
                 FishCollection.CollectionChanged += (sender, e) => { FishCount = FishCollection.Count; };
             }
         }
         private Aquarium _AquariumWindow;
+        /// <summary>
+        /// 周期数
+        /// </summary>
+        public long CycleNumber { get; set; }
         /// <summary>
         /// 追踪周期是否完成
         /// </summary>
@@ -66,9 +75,48 @@ namespace MicroFarm
         /// </summary>
         public int FishCount { get => _FishCount; set { _FishCount = value; NotifyPropertyChanged(nameof(FishCount)); } }
         private int _FishCount = 0;
+        /// <summary>
+        /// 是否展示图形界面
+        /// </summary>
+        public bool IsDisplayGraphics { get; set; } = true;
+        /// <summary>
+        /// 图形界面可见度
+        /// </summary>
+        public string DisplayGraphicsVisible { get; set; } = "Visible";
+
+        /// <summary>
+        /// 切换图形界面展示
+        /// </summary>
+        public void ChangeGraphicsVisible()
+        {
+            if (IsDisplayGraphics)
+            {
+                IsDisplayGraphics = false;
+                DisplayGraphicsVisible = "Collapsed";
+            }
+            else
+            {
+                IsDisplayGraphics = true;
+                DisplayGraphicsVisible = "Visible";
+            }
+
+            NotifyPropertyChanged(nameof(DisplayGraphicsVisible));
+            NotifyPropertyChanged(nameof(IsDisplayGraphics));
+        }
 
         #region 水族箱日志
         private Storyboard _logStoryBoard_Aquarium;
+        /// <summary>
+        /// 展示日志
+        /// </summary>
+        public void ViewLog()
+        {
+            AquariumWindow.logTextBox.Opacity = 1;
+
+            //消失动画
+            _logStoryBoard_Aquarium.Stop();
+            _logStoryBoard_Aquarium.Begin();
+        }
         /// <summary>
         /// 记录水族日志
         /// </summary>
@@ -92,10 +140,6 @@ namespace MicroFarm
 
             window.Dispatcher.Invoke(() =>
             {
-                //如果太长，则清空
-                if (textBox.Text.Length > 1000)
-                    textBox.Text = string.Empty;
-
                 //显示
                 textBox.Opacity = 1;
                 //追加日志

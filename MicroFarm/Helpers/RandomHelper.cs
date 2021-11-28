@@ -20,11 +20,11 @@ namespace MicroFarm.Helpers
         /// <summary>
         /// 是否命中概率
         /// </summary>
-        /// <param name="rate">大于0，小于1的小数</param>
+        /// <param name="rate">大于0，小于1的小数,最多支持万分之一</param>
         /// <returns></returns>
         public static bool IsHitRate(double rate)
         {
-            return GetRandomInt(0, 100) <= rate * 100;
+            return GetRandomInt(0, 10000) <= rate * 10000;
         }
 
         /// <summary>

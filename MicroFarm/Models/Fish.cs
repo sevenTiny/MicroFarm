@@ -1,5 +1,4 @@
-﻿using MicroFarm.Configs;
-using MicroFarm.Helpers;
+﻿using MicroFarm.Helpers;
 using MicroFarm.Managers;
 using System;
 using System.ComponentModel;
@@ -26,8 +25,10 @@ namespace MicroFarm.Models
                 PropertyChanged(this, new PropertyChangedEventArgs(info));
             }
         }
-
-        private FishMetaData _Meta = null;
+        /// <summary>
+        /// 当前鱼的元数据
+        /// </summary>
+        public FishMetaData CurrentMeta { get; private set; }
 
         #region 存储属性
         /// <summary>
@@ -45,17 +46,7 @@ namespace MicroFarm.Models
         /// <summary>
         /// 当前年龄
         /// </summary>
-        public int Age
-        {
-            get { return _Age; }
-            set
-            {
-                _Age = value;
-                Size = _Age < _Meta.AdultAge ? (_Meta.MaxSize * ((double)_Age / _Meta.AdultAge)) : _Meta.MaxSize;
-                NotifyPropertyChanged(nameof(Size));
-            }
-        }
-        private int _Age;
+        public int Age { get; set; }
         /// <summary>
         /// 出生日期
         /// </summary>
@@ -154,19 +145,20 @@ namespace MicroFarm.Models
         public bool IsReproduction { get; set; }
         #endregion
 
-        public Fish()
-        {
-            //获取元数据
-            _Meta = FishManager.GetFishMeta(Category);
-        }
-
         /// <summary>
         /// 初始化数据
+        /// 新创建的鱼必须执行此函数
         /// </summary>
-        public void Init()
+        public Fish Init()
         {
+            //获取元数据
+            CurrentMeta = FishManager.GetFishMeta(Category);
             //初始化时，附加元属性
             FishManager.AttatchMetaProperty(this);
+            //刷新年龄
+            RefereshAge();
+
+            return this;
         }
 
         /// <summary>
@@ -271,19 +263,29 @@ namespace MicroFarm.Models
         /// </summary>
         private void RefereshSpeed()
         {
-            RealTimeSpeed = RandomHelper.GetRandomInt(GameConst.RefereshIntervalSeconds, _Meta.DefaultSpeed);
+            RealTimeSpeed = RandomHelper.GetRandomInt(GameConst.RefereshIntervalSeconds, CurrentMeta.DefaultSpeed);
+        }
+        /// <summary>
+        /// 刷新年龄
+        /// </summary>
+        private void RefereshAge()
+        {
+            //年龄会调整Size变化
+            Size = Age < CurrentMeta.AdultAge ? (CurrentMeta.MaxSize * ((double)Age / CurrentMeta.AdultAge)) : CurrentMeta.MaxSize;
+            NotifyPropertyChanged(nameof(Age));
+            NotifyPropertyChanged(nameof(Size));
         }
         /// <summary>
         /// 触发死亡
         /// </summary>
         private void TriggerDeath()
         {
-            if (Age >= _Meta.MaxAge)
+            if (Age >= CurrentMeta.MaxAge)
             {
-                if (RandomHelper.IsHitRate(_Meta.MaxAgeDeathRate))
+                if (RandomHelper.IsHitRate(CurrentMeta.MaxAgeDeathRate))
                     IsDeath = true;
             }
-            else if (RandomHelper.IsHitRate(_Meta.NormalDeathRate))
+            else if (RandomHelper.IsHitRate(CurrentMeta.NormalDeathRate))
             {
                 IsDeath = true;
             }
@@ -316,23 +318,26 @@ namespace MicroFarm.Models
                 return;
 
             //如果生育率为0，则不处理生育事件
-            if (_Meta.ReproductionRate <= 0)
+            if (CurrentMeta.ReproductionRate <= 0)
                 return;
 
             //校验处于生育年龄
-            if (Age < _Meta.AdultAge || Age >= _Meta.MaxAge)
+            if (Age < CurrentMeta.AdultAge)
                 return;
 
             //关联的种类的元数据
-            var relaMeta = _Meta.ReproductionRelationCategory == Category ? _Meta : FishManager.GetFishMeta(_Meta.ReproductionRelationCategory);
+            var relaMeta = CurrentMeta.ReproductionRelationCategory == Category ? CurrentMeta : FishManager.GetFishMeta(CurrentMeta.ReproductionRelationCategory);
 
             //校验是否存在关联到达生育年龄的鱼
-            if (!GameContext.Instance.FishCollection.Any(t => relaMeta.AdultAge <= t.Age && t.Age < relaMeta.MaxAge))
+            if (!GameContext.Instance.FishCollection.Any(t => relaMeta.AdultAge <= t.Age))
                 return;
 
             //命中生育率，则触发生育
-            if (RandomHelper.IsHitRate(_Meta.ReproductionRate))
+            if (RandomHelper.IsHitRate(CurrentMeta.ReproductionRate))
+            {
                 IsReproduction = true;
+                GameContext.Instance.WriteLog_Aquarium("有一条鱼出生了...");
+            }
         }
         /// <summary>
         /// 成长事件
@@ -340,6 +345,8 @@ namespace MicroFarm.Models
         public void GrowUp()
         {
             Age++;
+            //刷新年龄
+            RefereshAge();
         }
     }
 }
