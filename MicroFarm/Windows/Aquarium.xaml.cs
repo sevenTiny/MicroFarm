@@ -72,6 +72,9 @@ namespace MicroFarm.Windows
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            //动态背景需要加这段
+            string mp4filePath = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + GameContext.Instance.AquariumBackgroundImage;
+            mediaBackground.Source = new Uri(mp4filePath);
             //初始化水族数据
             InitAquarium();
             //延时1s后启动水族箱

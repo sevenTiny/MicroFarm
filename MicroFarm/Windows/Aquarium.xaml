@@ -31,7 +31,7 @@
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate DataType="models:Fish">
-                        <Image gif:ImageBehavior.AnimatedSource="{Binding Source}" Width="{Binding Size}" Height="{Binding Size}" RenderTransformOrigin="0.5,0.5">
+                        <Image gif:ImageBehavior.AnimatedSource="{Binding Source}" Width="{Binding Size}" RenderTransformOrigin="0.5,0.5">
                             <Image.RenderTransform>
                                 <TransformGroup>
                                     <RotateTransform x:Name="rotate" Angle="{Binding Angle}" />
@@ -104,10 +104,31 @@
         </Style>
     </Window.Resources>
     <Grid>
+        <!--背景颜色层-->
+        <Grid Panel.ZIndex="-3" Background="Black"></Grid>
         <!--背景层-->
         <Grid Panel.ZIndex="-2" Visibility="{Binding DisplayGraphicsVisible}">
             <Grid.Background>
-                <ImageBrush ImageSource="{Binding AquariumBackgroundImage}"/>
+                <!--静态背景-->
+                <!--<ImageBrush ImageSource="{Binding AquariumBackgroundImage}"/>-->
+                <!--动态背景-->
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <MediaElement>
+                            <MediaElement.Triggers>
+                                <EventTrigger RoutedEvent="MediaElement.Loaded">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <MediaTimeline x:Name="mediaBackground" Source="{Binding AquariumBackgroundImage}" RepeatBehavior="Forever"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </MediaElement.Triggers>
+                        </MediaElement>
+                    </VisualBrush.Visual>
+                </VisualBrush>
             </Grid.Background>
         </Grid>
         <!--日志层-->
@@ -118,7 +139,7 @@
                 <RowDefinition Height="1*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid Grid.Row="1">
-                <TextBox x:Name="logTextBox" Text="" Background="{x:Null}" IsReadOnly="True" TextWrapping="WrapWithOverflow" AcceptsReturn="True" Opacity="0.5" BorderBrush="{x:Null}" IsUndoEnabled="False" SelectionBrush="{x:Null}" SelectionTextBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Arrow" FontSize="16"/>
+                <TextBox x:Name="logTextBox" Text="" Background="{x:Null}" IsReadOnly="True" TextWrapping="WrapWithOverflow" AcceptsReturn="True" Opacity="0.5" BorderBrush="{x:Null}" IsUndoEnabled="False" SelectionBrush="{x:Null}" SelectionTextBrush="{x:Null}" BorderThickness="0,0,0,0" Cursor="Arrow" FontSize="16" Foreground="White" />
             </Grid>
         </Grid>
         <!--底层水族展示-->

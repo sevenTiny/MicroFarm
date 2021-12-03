@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <GameData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-	<!--默认背景图片-->
+	<!--默认背景-->
 	<AquariumBackgroundImage>background.jpg</AquariumBackgroundImage>
+	<!--<AquariumBackgroundImage>v_海底阳光.mp4</AquariumBackgroundImage>-->
 </GameData>

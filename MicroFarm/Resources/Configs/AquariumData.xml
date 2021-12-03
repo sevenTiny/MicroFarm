@@ -18,6 +18,13 @@
 			<Age>100</Age>
 			<BirthDay>2021-11-24 22:53:40</BirthDay>
 		</Fish>
+		<Fish>
+			<Id>73df8480-6f29-4257-87dd-e36ef7a281a4</Id>
+			<Name>测试鱼</Name>
+			<Category>3</Category>
+			<Age>100</Age>
+			<BirthDay>2021-11-24 22:53:40</BirthDay>
+		</Fish>
 	</FishData>
 </AquariumData>
 

@@ -28,7 +28,9 @@
 		<!--生殖率-->
 		<ReproductionRate>0</ReproductionRate>
 		<!--生殖关联种类，如果存在关联，则水族中必须同时存在另一种成年鱼，才会触发生殖。如果不需要关联(自我繁殖)，则可以填自己-->
-		<ReproductionRelationCategory>1</ReproductionRelationCategory>
+		<ReproductionRelationCategory>-1</ReproductionRelationCategory>
+		<!--移动时是否有角度变换（水母这类的不需要角度变化）-->
+		<UseAngle>1</UseAngle>
 	</FishMetaData>
 	<FishMetaData>
 		<Name>标准鱼（雌）</Name>
@@ -44,5 +46,38 @@
 		<MaxAgeDeathRate>0.0005</MaxAgeDeathRate>
 		<ReproductionRate>0.001</ReproductionRate>
 		<ReproductionRelationCategory>0</ReproductionRelationCategory>
+		<UseAngle>1</UseAngle>
+	</FishMetaData>
+	<FishMetaData>
+		<Name>灰虎鱼</Name>
+		<Category>2</Category>
+		<Species>1</Species>
+		<BirthAge>1</BirthAge>
+		<AdultAge>180</AdultAge>
+		<MaxAge>360</MaxAge>
+		<DefaultSpeed>18</DefaultSpeed>
+		<MaxSize>60</MaxSize>
+		<Source>fish_2.png</Source>
+		<NormalDeathRate>0.0005</NormalDeathRate>
+		<MaxAgeDeathRate>0.0005</MaxAgeDeathRate>
+		<ReproductionRate>0</ReproductionRate>
+		<ReproductionRelationCategory>-1</ReproductionRelationCategory>
+		<UseAngle>1</UseAngle>
+	</FishMetaData>
+	<FishMetaData>
+		<Name>小鸡</Name>
+		<Category>3</Category>
+		<Species>2</Species>
+		<BirthAge>20</BirthAge>
+		<AdultAge>200</AdultAge>
+		<MaxAge>360</MaxAge>
+		<DefaultSpeed>13</DefaultSpeed>
+		<MaxSize>30</MaxSize>
+		<Source>fish_3.png</Source>
+		<NormalDeathRate>0.0005</NormalDeathRate>
+		<MaxAgeDeathRate>0.0005</MaxAgeDeathRate>
+		<ReproductionRate>0</ReproductionRate>
+		<ReproductionRelationCategory>-1</ReproductionRelationCategory>
+		<UseAngle>1</UseAngle>
 	</FishMetaData>
 </ArrayOfFishMetaData>

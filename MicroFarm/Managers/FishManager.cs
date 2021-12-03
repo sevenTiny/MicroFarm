@@ -121,5 +121,6 @@ namespace MicroFarm.Managers
         public double MaxAgeDeathRate { get; set; }
         public double ReproductionRate { get; set; }
         public int ReproductionRelationCategory { get; set; }
+        public int UseAngle { get; set; }
     }
 }

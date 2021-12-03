@@ -238,7 +238,6 @@ namespace MicroFarm.Models
             DebugHelper.WriteLine($"|\tAge={Age}");
             DebugHelper.WriteLine($"--------------------------------------------");
         }
-
         /// <summary>
         /// 刷新目标
         /// 默认有一定几率改变目标
@@ -258,6 +257,10 @@ namespace MicroFarm.Models
         /// </summary>
         private void RefereshAngle()
         {
+            //如果无需应用角度变换（如水母这类，则不需要调整角度）
+            if (CurrentMeta.UseAngle != 1)
+                return;
+
             //调整角度
             Angle = ((int)(Math.Atan2((AimTop - Top), (AimLeft - Left)) * 180 / Math.PI));
 
